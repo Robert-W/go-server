@@ -1,15 +1,33 @@
 package server
 
 import (
+	"context"
 	"log/slog"
-
-	"github.com/robert-w/go-server/internal/logger"
+	"net/http"
+	"time"
 )
 
-func Run() error {
-	logger.SetDefault()
+type apiServer struct {
+	server *http.Server
+}
 
-	slog.Info("Lets start our server")
+func New(ctx context.Context) *apiServer {
+	return &apiServer{
+		server: &http.Server{
+			Addr: "0.0.0.0:3000",
+		},
+	}
+}
 
-	return nil
+func (api *apiServer) Run() error {
+	slog.Info("Starting server", "address", api.server.Addr)
+
+	return api.server.ListenAndServe()
+}
+
+func (api *apiServer) Shutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	api.server.Shutdown(ctx)
 }
