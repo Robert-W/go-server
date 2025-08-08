@@ -5,6 +5,10 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/robert-w/go-server/internal/routes/system"
+	v1 "github.com/robert-w/go-server/internal/routes/v1"
 )
 
 type apiServer struct {
@@ -12,9 +16,20 @@ type apiServer struct {
 }
 
 func New(ctx context.Context) *apiServer {
+	router := mux.NewRouter()
+
+	// Create all of our subrouters and then pass them into functions to register
+	// all the routes in that subpath
+	systemRouter := router.PathPrefix("/system").Subrouter()
+	v1Router := router.PathPrefix("/v1").Subrouter()
+
+	system.RegisterRoutes(systemRouter)
+	v1.RegisterRoutes(v1Router)
+
 	return &apiServer{
 		server: &http.Server{
-			Addr: "0.0.0.0:3000",
+			Addr:    "0.0.0.0:3000",
+			Handler: router,
 		},
 	}
 }
