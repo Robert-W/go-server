@@ -21,7 +21,11 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), signals...)
 	defer stop()
 
-	srv := server.New(ctx)
+	srv, err := server.New(ctx)
+	if err != nil {
+		slog.Error("Server failed creation", "ServerError", err)
+		os.Exit(1)
+	}
 	// Run the server in a go routine so the main go routine can catch the
 	// interrupt signals
 	go func() {

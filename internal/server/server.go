@@ -7,16 +7,27 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/robert-w/go-server/internal/monitoring"
 	"github.com/robert-w/go-server/internal/routes/system"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 type apiServer struct {
-	server *http.Server
+	server        *http.Server
+	traceProvider *trace.TracerProvider
 }
 
-func New(ctx context.Context) *apiServer {
+func New(ctx context.Context) (*apiServer, error) {
+	tracer, traceProvider, err := monitoring.NewTracer()
+	if err != nil {
+		return nil, err
+	}
+
 	router := mux.NewRouter()
+
+	router.Use(otelmux.Middleware("api-server"))
 
 	// Create all of our subrouters and then pass them into functions to register
 	// all the routes in that subpath
@@ -24,14 +35,15 @@ func New(ctx context.Context) *apiServer {
 	v1Router := router.PathPrefix("/v1").Subrouter()
 
 	system.RegisterRoutes(systemRouter)
-	v1.RegisterRoutes(v1Router)
+	v1.RegisterRoutes(tracer, v1Router)
 
 	return &apiServer{
 		server: &http.Server{
 			Addr:    "0.0.0.0:3000",
 			Handler: router,
 		},
-	}
+		traceProvider: traceProvider,
+	}, nil
 }
 
 func (api *apiServer) Run() error {
@@ -44,5 +56,6 @@ func (api *apiServer) Shutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	api.traceProvider.Shutdown(ctx)
 	api.server.Shutdown(ctx)
 }
