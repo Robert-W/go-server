@@ -20,7 +20,7 @@ type apiServer struct {
 }
 
 func New(ctx context.Context) (*apiServer, error) {
-	tracer, traceProvider, err := monitoring.NewTracer()
+	tracer, traceProvider, err := monitoring.NewTracer(ctx)
 	if err != nil {
 		return nil, err
 	}
