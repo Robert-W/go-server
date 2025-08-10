@@ -22,8 +22,7 @@ type Handler struct {
 }
 
 func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.Tracer.Start(ctx, "ListSamples")
+	_, span := h.Tracer.Start(req.Context(), "ListSamples")
 	defer span.End()
 
 	samples := []Sample{
