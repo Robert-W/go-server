@@ -16,10 +16,11 @@ type Handler struct {
 }
 
 func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
-	_, span := h.Tracer.Start(req.Context(), "ListSamples")
+	ctx := req.Context()
+	_, span := h.Tracer.Start(ctx, "ListSamples")
 	defer span.End()
 
-	samples, err := listSamplesQuery()
+	samples, err := listSamplesQuery(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error listing all samples: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -35,6 +36,7 @@ func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.Int("query.result.length", len(*samples)),
 		attribute.Int("query.result.byte_length", len(sampleJson)),
@@ -45,10 +47,11 @@ func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *Handler) CreateSamples(res http.ResponseWriter, req *http.Request) {
-	_, span := h.Tracer.Start(req.Context(), "CreateSamples")
+	ctx := req.Context()
+	_, span := h.Tracer.Start(ctx, "CreateSamples")
 	defer span.End()
 
-	samples, err := createSamplesQuery()
+	samples, err := createSamplesQuery(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating samples: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -64,6 +67,7 @@ func (h *Handler) CreateSamples(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.Int("query.result.byte_length", len(sampleJson)),
 	)
@@ -73,10 +77,11 @@ func (h *Handler) CreateSamples(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *Handler) ReadSample(res http.ResponseWriter, req *http.Request) {
-	_, span := h.Tracer.Start(req.Context(), "ReadSample")
+	ctx := req.Context()
+	_, span := h.Tracer.Start(ctx, "ReadSample")
 	defer span.End()
 
-	sample, err := readSampleQuery()
+	sample, err := readSampleQuery(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error reading sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -92,6 +97,7 @@ func (h *Handler) ReadSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.Int("query.result.byte_length", len(sampleJson)),
 	)
@@ -101,10 +107,11 @@ func (h *Handler) ReadSample(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *Handler) UpdateSample(res http.ResponseWriter, req *http.Request) {
-	_, span := h.Tracer.Start(req.Context(), "UpdateSample")
+	ctx := req.Context()
+	_, span := h.Tracer.Start(ctx, "UpdateSample")
 	defer span.End()
 
-	sample, err := updateSampleQuery()
+	sample, err := updateSampleQuery(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error updating sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -120,6 +127,7 @@ func (h *Handler) UpdateSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.Int("query.result.byte_length", len(sampleJson)),
 	)
@@ -129,11 +137,12 @@ func (h *Handler) UpdateSample(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *Handler) DeleteSample(res http.ResponseWriter, req *http.Request) {
-	_, span := h.Tracer.Start(req.Context(), "DeleteSample")
+	ctx := req.Context()
+	_, span := h.Tracer.Start(ctx, "DeleteSample")
 	defer span.End()
 
 	vars := mux.Vars(req)
-	err := deleteSampleQuery()
+	err := deleteSampleQuery(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error deleting sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -141,6 +150,7 @@ func (h *Handler) DeleteSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.String("query.deleted.id", vars["id"]),
 	)

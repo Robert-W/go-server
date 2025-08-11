@@ -1,6 +1,13 @@
 package sample
 
-import "time"
+import (
+	"context"
+	"time"
+
+	"github.com/robert-w/go-server/internal/constants"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
+)
 
 type Sample struct {
 	Id        string    `json:"id"`
@@ -8,7 +15,11 @@ type Sample struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func listSamplesQuery() (*[]Sample, error) {
+func listSamplesQuery(ctx context.Context) (*[]Sample, error) {
+	tracer := otel.Tracer(constants.SERVICE_NAME)
+	_, span := tracer.Start(ctx, "listSamplesQuery")
+	defer span.End()
+
 	samples := []Sample{
 		{
 			Id:        "111",
@@ -27,10 +38,16 @@ func listSamplesQuery() (*[]Sample, error) {
 		},
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
+
 	return &samples, nil
 }
 
-func createSamplesQuery() (*[]Sample, error) {
+func createSamplesQuery(ctx context.Context) (*[]Sample, error) {
+	tracer := otel.Tracer(constants.SERVICE_NAME)
+	_, span := tracer.Start(ctx, "listSamplesQuery")
+	defer span.End()
+
 	samples := []Sample{
 		{
 			Id:        "111",
@@ -39,29 +56,49 @@ func createSamplesQuery() (*[]Sample, error) {
 		},
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
+
 	return &samples, nil
 }
 
-func readSampleQuery() (*Sample, error) {
+func readSampleQuery(ctx context.Context) (*Sample, error) {
+	tracer := otel.Tracer(constants.SERVICE_NAME)
+	_, span := tracer.Start(ctx, "listSamplesQuery")
+	defer span.End()
+
 	sample := Sample{
 		Id:        "123",
 		Value:     "Sample Read",
 		Timestamp: time.Now(),
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
+
 	return &sample, nil
 }
 
-func updateSampleQuery() (*Sample, error) {
+func updateSampleQuery(ctx context.Context) (*Sample, error) {
+	tracer := otel.Tracer(constants.SERVICE_NAME)
+	_, span := tracer.Start(ctx, "listSamplesQuery")
+	defer span.End()
+
 	sample := Sample{
 		Id:        "321",
 		Value:     "Sample Update",
 		Timestamp: time.Now(),
 	}
 
+	span.SetStatus(codes.Ok, "Ok")
+
 	return &sample, nil
 }
 
-func deleteSampleQuery() error {
+func deleteSampleQuery(ctx context.Context) error {
+	tracer := otel.Tracer(constants.SERVICE_NAME)
+	_, span := tracer.Start(ctx, "listSamplesQuery")
+	defer span.End()
+
+	span.SetStatus(codes.Ok, "Ok")
+
 	return nil
 }
