@@ -1,4 +1,4 @@
-package sample
+package models
 
 import (
 	"context"
@@ -15,9 +15,9 @@ type Sample struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func listSamplesQuery(ctx context.Context) (*[]Sample, error) {
+func ListAllSamples(ctx context.Context) (*[]Sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "listSamplesQuery")
+	_, span := tracer.Start(ctx, "ListAllSamples")
 	defer span.End()
 
 	samples := []Sample{
@@ -43,9 +43,9 @@ func listSamplesQuery(ctx context.Context) (*[]Sample, error) {
 	return &samples, nil
 }
 
-func createSamplesQuery(ctx context.Context) (*[]Sample, error) {
+func CreateSamples(ctx context.Context) (*[]Sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "listSamplesQuery")
+	_, span := tracer.Start(ctx, "CreateSamples")
 	defer span.End()
 
 	samples := []Sample{
@@ -61,9 +61,9 @@ func createSamplesQuery(ctx context.Context) (*[]Sample, error) {
 	return &samples, nil
 }
 
-func readSampleQuery(ctx context.Context) (*Sample, error) {
+func GetSampleById(ctx context.Context) (*Sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "listSamplesQuery")
+	_, span := tracer.Start(ctx, "GetSampleById")
 	defer span.End()
 
 	sample := Sample{
@@ -77,7 +77,7 @@ func readSampleQuery(ctx context.Context) (*Sample, error) {
 	return &sample, nil
 }
 
-func updateSampleQuery(ctx context.Context) (*Sample, error) {
+func UpdateSampleById(ctx context.Context) (*Sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "listSamplesQuery")
 	defer span.End()
@@ -93,9 +93,9 @@ func updateSampleQuery(ctx context.Context) (*Sample, error) {
 	return &sample, nil
 }
 
-func deleteSampleQuery(ctx context.Context) error {
+func DeleteSampleById(ctx context.Context) error {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "listSamplesQuery")
+	_, span := tracer.Start(ctx, "DeleteSampleById")
 	defer span.End()
 
 	span.SetStatus(codes.Ok, "Ok")

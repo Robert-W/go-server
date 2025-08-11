@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/robert-w/go-server/internal/db/models"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	oteltrace "go.opentelemetry.io/otel/trace"
@@ -20,7 +21,7 @@ func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
 	_, span := h.Tracer.Start(ctx, "ListSamples")
 	defer span.End()
 
-	samples, err := listSamplesQuery(ctx)
+	samples, err := models.ListAllSamples(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error listing all samples: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -51,7 +52,7 @@ func (h *Handler) CreateSamples(res http.ResponseWriter, req *http.Request) {
 	_, span := h.Tracer.Start(ctx, "CreateSamples")
 	defer span.End()
 
-	samples, err := createSamplesQuery(ctx)
+	samples, err := models.CreateSamples(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating samples: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -81,7 +82,7 @@ func (h *Handler) ReadSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.Tracer.Start(ctx, "ReadSample")
 	defer span.End()
 
-	sample, err := readSampleQuery(ctx)
+	sample, err := models.GetSampleById(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error reading sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -111,7 +112,7 @@ func (h *Handler) UpdateSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.Tracer.Start(ctx, "UpdateSample")
 	defer span.End()
 
-	sample, err := updateSampleQuery(ctx)
+	sample, err := models.UpdateSampleById(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error updating sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
@@ -142,7 +143,7 @@ func (h *Handler) DeleteSample(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	vars := mux.Vars(req)
-	err := deleteSampleQuery(ctx)
+	err := models.DeleteSampleById(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error deleting sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
