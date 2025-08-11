@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/robert-w/go-server/internal/constants"
 	"github.com/robert-w/go-server/internal/monitoring"
 	"github.com/robert-w/go-server/internal/routes/system"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
@@ -28,7 +27,9 @@ func New(ctx context.Context) (*apiServer, error) {
 
 	router := mux.NewRouter()
 
-	router.Use(otelmux.Middleware(constants.SERVICE_NAME))
+	// this claims to describe the name of the server, but gets mapped to
+	// server.address in the spans which is meant for DNS name or IP
+	router.Use(otelmux.Middleware("0.0.0.0"))
 
 	// Create all of our subrouters and then pass them into functions to register
 	// all the routes in that subpath
