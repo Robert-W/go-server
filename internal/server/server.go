@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/robert-w/go-server/internal/constants"
 	"github.com/robert-w/go-server/internal/monitoring"
 	"github.com/robert-w/go-server/internal/routes/system"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
@@ -20,14 +21,14 @@ type apiServer struct {
 }
 
 func New(ctx context.Context) (*apiServer, error) {
-	tracer, traceProvider, err := monitoring.NewTracer(ctx)
+	traceProvider, err := monitoring.NewTraceProvider(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	router := mux.NewRouter()
 
-	router.Use(otelmux.Middleware("api-server"))
+	router.Use(otelmux.Middleware(constants.SERVICE_NAME))
 
 	// Create all of our subrouters and then pass them into functions to register
 	// all the routes in that subpath
@@ -35,7 +36,7 @@ func New(ctx context.Context) (*apiServer, error) {
 	v1Router := router.PathPrefix("/v1").Subrouter()
 
 	system.RegisterRoutes(systemRouter)
-	v1.RegisterRoutes(tracer, v1Router)
+	v1.RegisterRoutes(v1Router)
 
 	return &apiServer{
 		server: &http.Server{

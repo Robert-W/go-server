@@ -10,12 +10,9 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-func NewTracer(ctx context.Context) (oteltrace.Tracer, *sdktrace.TracerProvider, error) {
-	tracer := otel.Tracer("api-server")
-
+func NewTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	exporter, err := otlptracehttp.New(
 		ctx,
 		otlptracehttp.WithCompression(otlptracehttp.GzipCompression),
@@ -23,7 +20,7 @@ func NewTracer(ctx context.Context) (oteltrace.Tracer, *sdktrace.TracerProvider,
 		otlptracehttp.WithInsecure(),
 	)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	traceProvider := sdktrace.NewTracerProvider(
@@ -41,5 +38,5 @@ func NewTracer(ctx context.Context) (oteltrace.Tracer, *sdktrace.TracerProvider,
 	)
 	otel.SetTextMapPropagator(textMapPropagator)
 
-	return tracer, traceProvider, nil
+	return traceProvider, nil
 }
