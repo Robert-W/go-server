@@ -2,11 +2,10 @@ package sample
 
 import (
 	"github.com/gorilla/mux"
-	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-func RegisterRoutes(subrouter *mux.Router, tracer oteltrace.Tracer) {
-	sampleHandler := &handler{service: &sampleService{}, tracer: tracer}
+func RegisterRoutes(subrouter *mux.Router) {
+	sampleHandler := &handler{service: &sampleService{}}
 	subrouter.HandleFunc("/samples", sampleHandler.listSamples).Methods("GET")
 	subrouter.HandleFunc("/samples", sampleHandler.createSamples).Methods("POST")
 	subrouter.HandleFunc("/samples/{id}", sampleHandler.readSample).Methods("GET")

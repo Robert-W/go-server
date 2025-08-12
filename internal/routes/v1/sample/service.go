@@ -14,8 +14,8 @@ import (
 
 type sampleService struct {}
 
-func (s *sampleService) ListAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "ListAllSamples")
+func (s *sampleService) listAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
+	span := monitoring.CreateDBSpan(ctx, "listAllSamples")
 	defer span.End()
 
 	samples := []sample{
@@ -44,8 +44,8 @@ func (s *sampleService) ListAllSamples(ctx context.Context) (*[]sample, *v1.Erro
 	return &samples, nil
 }
 
-func (s *sampleService) CreateSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "CreateSamples")
+func (s *sampleService) createSamples(ctx context.Context) (*[]sample, *v1.Error) {
+	span := monitoring.CreateDBSpan(ctx, "createSamples")
 	defer span.End()
 
 	samples := []sample{
@@ -64,8 +64,8 @@ func (s *sampleService) CreateSamples(ctx context.Context) (*[]sample, *v1.Error
 	return &samples, nil
 }
 
-func (s *sampleService) GetSampleById(ctx context.Context) (*sample, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "GetSampleById")
+func (s *sampleService) getSampleById(ctx context.Context) (*sample, *v1.Error) {
+	span := monitoring.CreateDBSpan(ctx, "getSampleById")
 	defer span.End()
 
 	sample := sample{
@@ -82,8 +82,8 @@ func (s *sampleService) GetSampleById(ctx context.Context) (*sample, *v1.Error) 
 	return &sample, nil
 }
 
-func (s *sampleService) UpdateSampleById(ctx context.Context) (*sample, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UpdateSampleById")
+func (s *sampleService) updateSampleById(ctx context.Context) (*sample, *v1.Error) {
+	span := monitoring.CreateDBSpan(ctx, "updateSampleById")
 	defer span.End()
 
 	sample := sample{
@@ -100,8 +100,8 @@ func (s *sampleService) UpdateSampleById(ctx context.Context) (*sample, *v1.Erro
 	return &sample, nil
 }
 
-func (s *sampleService) DeleteSampleById(ctx context.Context) (*sample, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "DeleteSampleById")
+func (s *sampleService) deleteSampleById(ctx context.Context) (*sample, *v1.Error) {
+	span := monitoring.CreateDBSpan(ctx, "deleteSampleById")
 	defer span.End()
 
 	sample := sample{

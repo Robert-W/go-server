@@ -1,7 +1,10 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
+
+	"github.com/robert-w/go-server/internal/monitoring"
 )
 
 type Error struct {
@@ -12,8 +15,8 @@ type Error struct {
 
 type v1Response struct {
 	Status string `json:"status"`
-	Result any    `json:"result"`
-	Error  *Error `json:"error"`
+	Result any    `json:"result,omitempty"`
+	Error  *Error `json:"error,omitempty"`
 }
 
 // Wrapper function to take the response from a service, which is either a
@@ -23,7 +26,9 @@ type v1Response struct {
 //
 // result is any marshallable struct, err is an error interface, errorType is
 // referring to error constants from internal/constants/errors.go
-func PrepareResponse(result any, err *Error) ([]byte, error) {
+func PrepareResponse(ctx context.Context, result any, err *Error) ([]byte, error) {
+	_, span := monitoring.CreateSpan(ctx, "PrepareResponse")
+	defer span.End()
 	// handle the error scenario first
 	if err != nil {
 		return json.Marshal(&v1Response{Status: "error", Error: err})
