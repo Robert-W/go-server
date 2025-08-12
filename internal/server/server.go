@@ -8,8 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/robert-w/go-server/internal/monitoring"
-	"github.com/robert-w/go-server/internal/routes/system"
-	v1 "github.com/robert-w/go-server/internal/routes/v1"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
@@ -36,8 +34,8 @@ func New(ctx context.Context) (*apiServer, error) {
 	// server.address in the spans which is meant for DNS name or IP
 	v1Router.Use(otelmux.Middleware("0.0.0.0"))
 
-	system.RegisterRoutes(systemRouter)
-	v1.RegisterRoutes(v1Router)
+	registerSystemRoutes(systemRouter)
+	registerV1Routes(v1Router)
 
 	return &apiServer{
 		server: &http.Server{
