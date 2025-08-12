@@ -5,8 +5,10 @@ import (
 	"time"
 
 	"github.com/robert-w/go-server/internal/constants"
-	"go.opentelemetry.io/otel"
+	"github.com/robert-w/go-server/internal/monitoring"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
 type sample struct {
@@ -20,8 +22,7 @@ type SampleService struct {
 }
 
 func (s *SampleService) ListAllSamples(ctx context.Context) (*[]sample, error) {
-	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "ListAllSamples")
+	span := monitoring.CreateDBSpan(ctx, "ListAllSamples")
 	defer span.End()
 
 	samples := []sample{
@@ -43,13 +44,15 @@ func (s *SampleService) ListAllSamples(ctx context.Context) (*[]sample, error) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
+	span.SetAttributes(
+		semconv.DBResponseReturnedRows(len(samples)),
+	)
 
 	return &samples, nil
 }
 
 func (s *SampleService) CreateSamples(ctx context.Context) (*[]sample, error) {
-	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "CreateSamples")
+	span := monitoring.CreateDBSpan(ctx, "CreateSamples")
 	defer span.End()
 
 	samples := []sample{
@@ -61,13 +64,15 @@ func (s *SampleService) CreateSamples(ctx context.Context) (*[]sample, error) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
+	span.SetAttributes(
+		semconv.DBResponseReturnedRows(len(samples)),
+	)
 
 	return &samples, nil
 }
 
 func (s *SampleService) GetSampleById(ctx context.Context) (*sample, error) {
-	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "GetSampleById")
+	span := monitoring.CreateDBSpan(ctx, "GetSampleById")
 	defer span.End()
 
 	sample := sample{
@@ -77,13 +82,15 @@ func (s *SampleService) GetSampleById(ctx context.Context) (*sample, error) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
+	span.SetAttributes(
+		semconv.DBResponseReturnedRows(1),
+	)
 
 	return &sample, nil
 }
 
 func (s *SampleService) UpdateSampleById(ctx context.Context) (*sample, error) {
-	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "listSamplesQuery")
+	span := monitoring.CreateDBSpan(ctx, "UpdateSampleById")
 	defer span.End()
 
 	sample := sample{
@@ -93,16 +100,21 @@ func (s *SampleService) UpdateSampleById(ctx context.Context) (*sample, error) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
+	span.SetAttributes(
+		attribute.Int(constants.DB_AFFECTED_ROWS, 1),
+	)
 
 	return &sample, nil
 }
 
 func (s *SampleService) DeleteSampleById(ctx context.Context) error {
-	tracer := otel.Tracer(constants.SERVICE_NAME)
-	_, span := tracer.Start(ctx, "DeleteSampleById")
+	span := monitoring.CreateDBSpan(ctx, "DeleteSampleById")
 	defer span.End()
 
 	span.SetStatus(codes.Ok, "Ok")
+	span.SetAttributes(
+		attribute.Int(constants.DB_AFFECTED_ROWS, 0),
+	)
 
 	return nil
 }
