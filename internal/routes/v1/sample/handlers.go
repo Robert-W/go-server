@@ -20,8 +20,8 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 
 	samples, serviceErr := h.service.ListAllSamples(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
 	response, err := v1.PrepareResponse(samples, serviceErr)
@@ -44,8 +44,8 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 
 	samples, serviceErr := h.service.CreateSamples(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
 	response, err := v1.PrepareResponse(samples, serviceErr)
@@ -68,8 +68,8 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 
 	sample, serviceErr := h.service.GetSampleById(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
 	response, err := v1.PrepareResponse(sample, serviceErr)
@@ -92,8 +92,8 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 
 	sample, serviceErr := h.service.UpdateSampleById(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
 	response, err := v1.PrepareResponse(sample, serviceErr)
@@ -116,8 +116,8 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 
 	output, serviceErr := h.service.DeleteSampleById(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
 	response, err := v1.PrepareResponse(output, serviceErr)

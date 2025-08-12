@@ -6,6 +6,7 @@ import (
 
 	"github.com/robert-w/go-server/internal/constants"
 	"github.com/robert-w/go-server/internal/monitoring"
+	v1 "github.com/robert-w/go-server/internal/routes/v1"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
@@ -13,7 +14,7 @@ import (
 
 type sampleService struct {}
 
-func (s *sampleService) ListAllSamples(ctx context.Context) (*[]sample, error) {
+func (s *sampleService) ListAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "ListAllSamples")
 	defer span.End()
 
@@ -43,7 +44,7 @@ func (s *sampleService) ListAllSamples(ctx context.Context) (*[]sample, error) {
 	return &samples, nil
 }
 
-func (s *sampleService) CreateSamples(ctx context.Context) (*[]sample, error) {
+func (s *sampleService) CreateSamples(ctx context.Context) (*[]sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "CreateSamples")
 	defer span.End()
 
@@ -63,7 +64,7 @@ func (s *sampleService) CreateSamples(ctx context.Context) (*[]sample, error) {
 	return &samples, nil
 }
 
-func (s *sampleService) GetSampleById(ctx context.Context) (*sample, error) {
+func (s *sampleService) GetSampleById(ctx context.Context) (*sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "GetSampleById")
 	defer span.End()
 
@@ -81,7 +82,7 @@ func (s *sampleService) GetSampleById(ctx context.Context) (*sample, error) {
 	return &sample, nil
 }
 
-func (s *sampleService) UpdateSampleById(ctx context.Context) (*sample, error) {
+func (s *sampleService) UpdateSampleById(ctx context.Context) (*sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "UpdateSampleById")
 	defer span.End()
 
@@ -99,7 +100,7 @@ func (s *sampleService) UpdateSampleById(ctx context.Context) (*sample, error) {
 	return &sample, nil
 }
 
-func (s *sampleService) DeleteSampleById(ctx context.Context) (*sample, error) {
+func (s *sampleService) DeleteSampleById(ctx context.Context) (*sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "DeleteSampleById")
 	defer span.End()
 
