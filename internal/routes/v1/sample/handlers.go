@@ -131,7 +131,4 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
-
-	span.SetStatus(codes.Ok, "Ok")
-	res.WriteHeader(http.StatusNoContent)
 }
