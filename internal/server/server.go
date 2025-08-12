@@ -34,7 +34,7 @@ func New(ctx context.Context) (*apiServer, error) {
 	// Create all of our subrouters and then pass them into functions to register
 	// all the routes in that subpath
 	systemRouter := router.PathPrefix("/system").Subrouter()
-	v1Router := router.PathPrefix("/v1").Subrouter()
+	v1Router := router.PathPrefix("/api/v1").Subrouter()
 
 	system.RegisterRoutes(systemRouter)
 	v1.RegisterRoutes(v1Router)
