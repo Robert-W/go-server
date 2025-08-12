@@ -7,10 +7,10 @@ import (
 )
 
 func RegisterRoutes(subrouter *mux.Router, tracer oteltrace.Tracer) {
-	sampleHandler := &Handler{Service: &services.SampleService{}, Tracer: tracer}
-	subrouter.HandleFunc("/samples", sampleHandler.ListSamples).Methods("GET")
-	subrouter.HandleFunc("/samples", sampleHandler.CreateSamples).Methods("POST")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.ReadSample).Methods("GET")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.UpdateSample).Methods("PUT")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.DeleteSample).Methods("DELETE")
+	sampleHandler := &handler{service: &services.SampleService{}, tracer: tracer}
+	subrouter.HandleFunc("/samples", sampleHandler.listSamples).Methods("GET")
+	subrouter.HandleFunc("/samples", sampleHandler.createSamples).Methods("POST")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.readSample).Methods("GET")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.updateSample).Methods("PUT")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.deleteSample).Methods("DELETE")
 }
