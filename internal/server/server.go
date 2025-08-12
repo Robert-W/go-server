@@ -27,14 +27,14 @@ func New(ctx context.Context) (*apiServer, error) {
 
 	router := mux.NewRouter()
 
-	// this claims to describe the name of the server, but gets mapped to
-	// server.address in the spans which is meant for DNS name or IP
-	router.Use(otelmux.Middleware("0.0.0.0"))
-
 	// Create all of our subrouters and then pass them into functions to register
 	// all the routes in that subpath
 	systemRouter := router.PathPrefix("/system").Subrouter()
 	v1Router := router.PathPrefix("/api/v1").Subrouter()
+
+	// this claims to describe the name of the server, but gets mapped to
+	// server.address in the spans which is meant for DNS name or IP
+	v1Router.Use(otelmux.Middleware("0.0.0.0"))
 
 	system.RegisterRoutes(systemRouter)
 	v1.RegisterRoutes(v1Router)
