@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 )
 
-// type v1Error struct {
-// 	Message    string `json:"message"`
-// 	StatusCode int    `json:"status_code"`
-// }
+type Error struct {
+	Message    string `json:"message"`
+	StatusCode int    `json:"status_code"`
+}
 
 type v1Response struct {
 	Status string `json:"status"`
@@ -25,7 +25,10 @@ type v1Response struct {
 func PrepareResponse(result any, err error) ([]byte, error) {
 	// handle the error scenario first
 	if err != nil {
-		return json.Marshal(&v1Response{Status: "error", Error: err.Error()})
+		return json.Marshal(&v1Response{
+			Status: "error",
+			Error:  err.Error(),
+		})
 	}
 
 	// we have a response, attempt to prepare our output
