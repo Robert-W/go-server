@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/robert-w/go-server/internal/db/services"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
@@ -39,11 +37,6 @@ func (h *Handler) ListSamples(res http.ResponseWriter, req *http.Request) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	span.SetAttributes(
-		attribute.Int("query.result.length", len(*samples)),
-		attribute.Int("query.result.byte_length", len(sampleJson)),
-	)
-
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(sampleJson)
 }
@@ -70,10 +63,6 @@ func (h *Handler) CreateSamples(res http.ResponseWriter, req *http.Request) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	span.SetAttributes(
-		attribute.Int("query.result.byte_length", len(sampleJson)),
-	)
-
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(sampleJson)
 }
@@ -100,10 +89,6 @@ func (h *Handler) ReadSample(res http.ResponseWriter, req *http.Request) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	span.SetAttributes(
-		attribute.Int("query.result.byte_length", len(sampleJson)),
-	)
-
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(sampleJson)
 }
@@ -130,10 +115,6 @@ func (h *Handler) UpdateSample(res http.ResponseWriter, req *http.Request) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	span.SetAttributes(
-		attribute.Int("query.result.byte_length", len(sampleJson)),
-	)
-
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(sampleJson)
 }
@@ -143,7 +124,6 @@ func (h *Handler) DeleteSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.Tracer.Start(ctx, "DeleteSample")
 	defer span.End()
 
-	vars := mux.Vars(req)
 	err := h.Service.DeleteSampleById(ctx)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error deleting sample: %v", err), http.StatusInternalServerError)
@@ -153,9 +133,5 @@ func (h *Handler) DeleteSample(res http.ResponseWriter, req *http.Request) {
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	span.SetAttributes(
-		attribute.String("query.deleted.id", vars["id"]),
-	)
-
 	res.WriteHeader(http.StatusNoContent)
 }
