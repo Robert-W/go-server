@@ -1,26 +1,16 @@
 package sample
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/robert-w/go-server/internal/db/services"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
 	"go.opentelemetry.io/otel/codes"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-type sampleService interface {
-	ListAllSamples(ctx context.Context) (*[]services.Sample, error)
-	CreateSamples(ctx context.Context) (*[]services.Sample, error)
-	GetSampleById(ctx context.Context) (*services.Sample, error)
-	UpdateSampleById(ctx context.Context) (*services.Sample, error)
-	DeleteSampleById(ctx context.Context) (*services.Sample, error)
-}
-
 type handler struct {
 	tracer oteltrace.Tracer
-	service sampleService
+	service *sampleService
 }
 
 func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
