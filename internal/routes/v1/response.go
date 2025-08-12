@@ -5,14 +5,15 @@ import (
 )
 
 type Error struct {
+	Original   error  `json:"-"`
 	Message    string `json:"message"`
-	StatusCode int    `json:"status_code"`
+	StatusCode int    `json:"statusCode"`
 }
 
 type v1Response struct {
 	Status string `json:"status"`
 	Result any    `json:"result"`
-	Error  string `json:"error"`
+	Error  *Error `json:"error"`
 }
 
 // Wrapper function to take the response from a service, which is either a
@@ -22,13 +23,10 @@ type v1Response struct {
 //
 // result is any marshallable struct, err is an error interface, errorType is
 // referring to error constants from internal/constants/errors.go
-func PrepareResponse(result any, err error) ([]byte, error) {
+func PrepareResponse(result any, err *Error) ([]byte, error) {
 	// handle the error scenario first
 	if err != nil {
-		return json.Marshal(&v1Response{
-			Status: "error",
-			Error:  err.Error(),
-		})
+		return json.Marshal(&v1Response{Status: "error", Error: err})
 	}
 
 	// we have a response, attempt to prepare our output
