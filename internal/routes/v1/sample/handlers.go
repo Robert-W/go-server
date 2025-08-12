@@ -1,18 +1,28 @@
 package sample
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/robert-w/go-server/internal/db/services"
+	v1 "github.com/robert-w/go-server/internal/routes/v1"
 	"go.opentelemetry.io/otel/codes"
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+type sampleService interface {
+	ListAllSamples(ctx context.Context) (*[]services.Sample, error)
+	CreateSamples(ctx context.Context) (*[]services.Sample, error)
+	GetSampleById(ctx context.Context) (*services.Sample, error)
+	UpdateSampleById(ctx context.Context) (*services.Sample, error)
+	DeleteSampleById(ctx context.Context) error
+}
+
 type handler struct {
 	tracer oteltrace.Tracer
-	service *services.SampleService
+	service sampleService
 }
 
 func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
@@ -20,25 +30,23 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 	_, span := h.tracer.Start(ctx, "ListSamples")
 	defer span.End()
 
-	samples, err := h.service.ListAllSamples(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error listing all samples: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "ListSamplesQuery")
-		return
+	samples, serviceErr := h.service.ListAllSamples(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr)
+		span.SetStatus(codes.Error, serviceErr.Error())
 	}
 
-	sampleJson, err := json.Marshal(samples)
+	response, err := v1.PrepareResponse(samples, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(samples)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
