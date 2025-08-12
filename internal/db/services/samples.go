@@ -1,4 +1,4 @@
-package models
+package services
 
 import (
 	"context"
@@ -9,18 +9,22 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
-type Sample struct {
+type sample struct {
 	Id        string    `json:"id"`
 	Value     string    `json:"value"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func ListAllSamples(ctx context.Context) (*[]Sample, error) {
+type SampleService struct {
+	// TODO: add db pool here
+}
+
+func (s *SampleService) ListAllSamples(ctx context.Context) (*[]sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "ListAllSamples")
 	defer span.End()
 
-	samples := []Sample{
+	samples := []sample{
 		{
 			Id:        "111",
 			Value:     "First Sample",
@@ -43,12 +47,12 @@ func ListAllSamples(ctx context.Context) (*[]Sample, error) {
 	return &samples, nil
 }
 
-func CreateSamples(ctx context.Context) (*[]Sample, error) {
+func (s *SampleService) CreateSamples(ctx context.Context) (*[]sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "CreateSamples")
 	defer span.End()
 
-	samples := []Sample{
+	samples := []sample{
 		{
 			Id:        "111",
 			Value:     "New Sample",
@@ -61,12 +65,12 @@ func CreateSamples(ctx context.Context) (*[]Sample, error) {
 	return &samples, nil
 }
 
-func GetSampleById(ctx context.Context) (*Sample, error) {
+func (s *SampleService) GetSampleById(ctx context.Context) (*sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "GetSampleById")
 	defer span.End()
 
-	sample := Sample{
+	sample := sample{
 		Id:        "123",
 		Value:     "Sample Read",
 		Timestamp: time.Now(),
@@ -77,12 +81,12 @@ func GetSampleById(ctx context.Context) (*Sample, error) {
 	return &sample, nil
 }
 
-func UpdateSampleById(ctx context.Context) (*Sample, error) {
+func (s *SampleService) UpdateSampleById(ctx context.Context) (*sample, error) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "listSamplesQuery")
 	defer span.End()
 
-	sample := Sample{
+	sample := sample{
 		Id:        "321",
 		Value:     "Sample Update",
 		Timestamp: time.Now(),
@@ -93,7 +97,7 @@ func UpdateSampleById(ctx context.Context) (*Sample, error) {
 	return &sample, nil
 }
 
-func DeleteSampleById(ctx context.Context) error {
+func (s *SampleService) DeleteSampleById(ctx context.Context) error {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 	_, span := tracer.Start(ctx, "DeleteSampleById")
 	defer span.End()
@@ -102,3 +106,4 @@ func DeleteSampleById(ctx context.Context) error {
 
 	return nil
 }
+
