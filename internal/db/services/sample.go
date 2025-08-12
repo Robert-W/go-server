@@ -107,15 +107,19 @@ func (s *SampleService) UpdateSampleById(ctx context.Context) (*Sample, error) {
 	return &sample, nil
 }
 
-func (s *SampleService) DeleteSampleById(ctx context.Context) error {
+func (s *SampleService) DeleteSampleById(ctx context.Context) (*Sample, error) {
 	span := monitoring.CreateDBSpan(ctx, "DeleteSampleById")
 	defer span.End()
+
+	sample := Sample{
+		Id:        "321",
+	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
 		attribute.Int(constants.DB_AFFECTED_ROWS, 0),
 	)
 
-	return nil
+	return &sample, nil
 }
 

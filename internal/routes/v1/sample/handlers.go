@@ -2,8 +2,6 @@ package sample
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/robert-w/go-server/internal/db/services"
@@ -17,7 +15,7 @@ type sampleService interface {
 	CreateSamples(ctx context.Context) (*[]services.Sample, error)
 	GetSampleById(ctx context.Context) (*services.Sample, error)
 	UpdateSampleById(ctx context.Context) (*services.Sample, error)
-	DeleteSampleById(ctx context.Context) error
+	DeleteSampleById(ctx context.Context) (*services.Sample, error)
 }
 
 type handler struct {
@@ -54,25 +52,23 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 	_, span := h.tracer.Start(ctx, "CreateSamples")
 	defer span.End()
 
-	samples, err := h.service.CreateSamples(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error creating samples: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "createSamplesQuery")
-		return
+	samples, serviceErr := h.service.CreateSamples(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr)
+		span.SetStatus(codes.Error, serviceErr.Error())
 	}
 
-	sampleJson, err := json.Marshal(samples)
+	response, err := v1.PrepareResponse(samples, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(samples)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
@@ -80,25 +76,23 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.tracer.Start(ctx, "ReadSample")
 	defer span.End()
 
-	sample, err := h.service.GetSampleById(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error reading sample: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "readSampleQuery")
-		return
+	sample, serviceErr := h.service.GetSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr)
+		span.SetStatus(codes.Error, serviceErr.Error())
 	}
 
-	sampleJson, err := json.Marshal(sample)
+	response, err := v1.PrepareResponse(sample, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(samples)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
@@ -106,25 +100,23 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.tracer.Start(ctx, "UpdateSample")
 	defer span.End()
 
-	sample, err := h.service.UpdateSampleById(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error updating sample: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "updateSamplesQuery")
-		return
+	sample, serviceErr := h.service.UpdateSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr)
+		span.SetStatus(codes.Error, serviceErr.Error())
 	}
 
-	sampleJson, err := json.Marshal(sample)
+	response, err := v1.PrepareResponse(sample, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(sample)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
@@ -132,13 +124,23 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 	_, span := h.tracer.Start(ctx, "DeleteSample")
 	defer span.End()
 
-	err := h.service.DeleteSampleById(ctx)
+	output, serviceErr := h.service.DeleteSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr)
+		span.SetStatus(codes.Error, serviceErr.Error())
+	}
+
+	response, err := v1.PrepareResponse(output, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Error deleting sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "deleteSamplesQuery")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
+
+	span.SetStatus(codes.Ok, "Ok")
+	res.Header().Set("Content-Type", "application/json")
+	res.Write(response)
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.WriteHeader(http.StatusNoContent)
