@@ -1,42 +1,28 @@
 package sample
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
 	"net/http"
 
-	"github.com/robert-w/go-server/internal/db/services"
+	"github.com/robert-w/go-server/internal/monitoring"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
 	"go.opentelemetry.io/otel/codes"
-	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
-type sampleService interface {
-	ListAllSamples(ctx context.Context) (*[]services.Sample, error)
-	CreateSamples(ctx context.Context) (*[]services.Sample, error)
-	GetSampleById(ctx context.Context) (*services.Sample, error)
-	UpdateSampleById(ctx context.Context) (*services.Sample, error)
-	DeleteSampleById(ctx context.Context) error
-}
-
 type handler struct {
-	tracer oteltrace.Tracer
-	service sampleService
+	service *sampleService
 }
 
 func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.tracer.Start(ctx, "ListSamples")
+	ctx, span := monitoring.CreateSpan(req.Context(), "listSamples")
 	defer span.End()
 
-	samples, serviceErr := h.service.ListAllSamples(ctx)
+	samples, serviceErr := h.service.listAllSamples(ctx)
 	if serviceErr != nil {
-		span.RecordError(serviceErr)
-		span.SetStatus(codes.Error, serviceErr.Error())
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	response, err := v1.PrepareResponse(samples, serviceErr)
+	response, err := v1.PrepareResponse(ctx, samples, serviceErr)
 	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
@@ -50,96 +36,93 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.tracer.Start(ctx, "CreateSamples")
+	ctx, span := monitoring.CreateSpan(req.Context(), "createSamples")
 	defer span.End()
 
-	samples, err := h.service.CreateSamples(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error creating samples: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "createSamplesQuery")
-		return
+	samples, serviceErr := h.service.createSamples(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	sampleJson, err := json.Marshal(samples)
+	response, err := v1.PrepareResponse(ctx, samples, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(samples)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.tracer.Start(ctx, "ReadSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "readSample")
 	defer span.End()
 
-	sample, err := h.service.GetSampleById(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error reading sample: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "readSampleQuery")
-		return
+	sample, serviceErr := h.service.getSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	sampleJson, err := json.Marshal(sample)
+	response, err := v1.PrepareResponse(ctx, sample, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(samples)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.tracer.Start(ctx, "UpdateSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "updateSample")
 	defer span.End()
 
-	sample, err := h.service.UpdateSampleById(ctx)
-	if err != nil {
-		http.Error(res, fmt.Sprintf("Error updating sample: %v", err), http.StatusInternalServerError)
-		span.RecordError(err)
-		span.SetStatus(codes.Error, "updateSamplesQuery")
-		return
+	sample, serviceErr := h.service.updateSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	sampleJson, err := json.Marshal(sample)
+	response, err := v1.PrepareResponse(ctx, sample, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Marshalling Error: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "json.Marhsal(sample)")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(sampleJson)
+	res.Write(response)
 }
 
 func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	_, span := h.tracer.Start(ctx, "DeleteSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "deleteSample")
 	defer span.End()
 
-	err := h.service.DeleteSampleById(ctx)
+	output, serviceErr := h.service.deleteSampleById(ctx)
+	if serviceErr != nil {
+		span.RecordError(serviceErr.Original)
+		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	}
+
+	response, err := v1.PrepareResponse(ctx, output, serviceErr)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Error deleting sample: %v", err), http.StatusInternalServerError)
 		span.RecordError(err)
-		span.SetStatus(codes.Error, "deleteSamplesQuery")
+		span.SetStatus(codes.Error, err.Error())
+		http.Error(res, "Error marshalling JSON", http.StatusInternalServerError)
 		return
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
-	res.WriteHeader(http.StatusNoContent)
+	res.Header().Set("Content-Type", "application/json")
+	res.Write(response)
 }
