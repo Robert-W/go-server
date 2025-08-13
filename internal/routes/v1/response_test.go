@@ -59,7 +59,7 @@ func TestPrepareResponse(t *testing.T) {
 		output, err := PrepareResponse(ctx, badResponse, nil)
 
 		if output != nil {
-			t.Errorf("Bad Respones should not be successfully serialized")
+			t.Errorf("Bad Response should not be successfully serialized")
 		}
 
 		if err == nil {
