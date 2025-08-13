@@ -32,7 +32,9 @@ func main() {
 		err := srv.Run()
 
 		if err != nil && err != http.ErrServerClosed {
+			// Force our server to start the shutdown process
 			slog.Error("Server failed to start", "ServerError", err)
+			stop()
 		}
 	}()
 
