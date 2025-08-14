@@ -1,6 +1,7 @@
 package sample
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/robert-w/go-server/internal/monitoring"
@@ -8,8 +9,16 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
+type serviceInterface interface {
+	listAllSamples(ctx context.Context) (*[]sample, *v1.Error)
+	createSamples(ctx context.Context) (*[]sample, *v1.Error)
+	getSampleById(ctx context.Context) (*sample, *v1.Error)
+	updateSampleById(ctx context.Context) (*sample, *v1.Error)
+	deleteSampleById(ctx context.Context) (*sample, *v1.Error)
+}
+
 type handler struct {
-	service *sampleService
+	service serviceInterface
 }
 
 func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
@@ -17,9 +26,11 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	samples, serviceErr := h.service.listAllSamples(ctx)
-	if serviceErr != nil {
+	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	} else {
+		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	response, err := v1.PrepareResponse(ctx, samples, serviceErr)
@@ -30,7 +41,11 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
+	// If we have a service error with error, forward the error code back
+	if serviceErr != nil && serviceErr.StatusCode != 0 {
+		res.WriteHeader(serviceErr.StatusCode)
+	}
+
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
@@ -40,9 +55,11 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	samples, serviceErr := h.service.createSamples(ctx)
-	if serviceErr != nil {
+	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	} else {
+		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	response, err := v1.PrepareResponse(ctx, samples, serviceErr)
@@ -53,7 +70,11 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
+	// If we have a service error with error, forward the error code back
+	if serviceErr != nil && serviceErr.StatusCode != 0 {
+		res.WriteHeader(serviceErr.StatusCode)
+	}
+
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
@@ -63,9 +84,11 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	sample, serviceErr := h.service.getSampleById(ctx)
-	if serviceErr != nil {
+	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	} else {
+		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	response, err := v1.PrepareResponse(ctx, sample, serviceErr)
@@ -76,7 +99,11 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
+	// If we have a service error with error, forward the error code back
+	if serviceErr != nil && serviceErr.StatusCode != 0 {
+		res.WriteHeader(serviceErr.StatusCode)
+	}
+
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
@@ -86,9 +113,11 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	sample, serviceErr := h.service.updateSampleById(ctx)
-	if serviceErr != nil {
+	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	} else {
+		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	response, err := v1.PrepareResponse(ctx, sample, serviceErr)
@@ -99,7 +128,11 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
+	// If we have a service error with error, forward the error code back
+	if serviceErr != nil && serviceErr.StatusCode != 0 {
+		res.WriteHeader(serviceErr.StatusCode)
+	}
+
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
@@ -109,9 +142,11 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	output, serviceErr := h.service.deleteSampleById(ctx)
-	if serviceErr != nil {
+	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
+	} else {
+		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	response, err := v1.PrepareResponse(ctx, output, serviceErr)
@@ -122,7 +157,11 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
+	// If we have a service error with error, forward the error code back
+	if serviceErr != nil && serviceErr.StatusCode != 0 {
+		res.WriteHeader(serviceErr.StatusCode)
+	}
+
 	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
