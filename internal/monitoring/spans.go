@@ -32,7 +32,7 @@ func CreateDBSpan(ctx context.Context, name string) trace.Span {
 	// creation. You can update the values later, but if you need to sample on an
 	// attribute, add it here
 	options := []trace.SpanStartOption{
-		trace.WithSpanKind(trace.SpanKindInternal),
+		trace.WithSpanKind(trace.SpanKindServer),
 		trace.WithAttributes(getCommonAttributes()...),
 		trace.WithAttributes(
 			semconv.DBCollectionName(""),
@@ -53,7 +53,7 @@ func CreateSpan(ctx context.Context, name string) (context.Context, trace.Span) 
 	// creation. You can update the values later, but if you need to sample on an
 	// attribute, add it here
 	options := []trace.SpanStartOption{
-		trace.WithSpanKind(trace.SpanKindInternal),
+		trace.WithSpanKind(trace.SpanKindServer),
 		trace.WithAttributes(getCommonAttributes()...),
 	}
 
