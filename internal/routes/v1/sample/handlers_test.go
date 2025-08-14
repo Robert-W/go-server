@@ -3,6 +3,7 @@ package sample
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -39,23 +40,23 @@ func (m *mockSampleService) deleteSampleById(ctx context.Context) (*sample, *v1.
 type mockSampleServiceErr struct{}
 
 func (m *mockSampleServiceErr) listAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500}
+	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
 func (m *mockSampleServiceErr) createSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500}
+	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
 func (m *mockSampleServiceErr) getSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404}
+	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
 func (m *mockSampleServiceErr) updateSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404}
+	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
 func (m *mockSampleServiceErr) deleteSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404}
+	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
 // Types for parsing responses
