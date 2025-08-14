@@ -2,7 +2,6 @@ package monitoring
 
 import (
 	"context"
-	"os"
 	"runtime"
 
 	"github.com/robert-w/go-server/internal/constants"
@@ -23,8 +22,6 @@ func getCommmoAttributes() []attribute.KeyValue {
 		semconv.CodeLineNumber(line),
 		semconv.CodeFunctionName(runtime.FuncForPC(pointer).Name()),
 		semconv.ProcessRuntimeVersion(runtime.Version()),
-		semconv.ServiceName(constants.SERVICE_NAME),
-		semconv.ServiceVersion(os.Getenv("GIT_SHA")),
 	}
 }
 

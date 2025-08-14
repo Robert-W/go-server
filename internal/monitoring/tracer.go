@@ -4,12 +4,14 @@ import (
 	"context"
 	"os"
 
+	"github.com/robert-w/go-server/internal/constants"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
 func NewTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
@@ -26,7 +28,8 @@ func NewTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	traceProvider := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
 		sdktrace.WithResource(resource.NewSchemaless(
-			attribute.String("service.name", "api-server"),
+			semconv.ServiceName(constants.SERVICE_NAME),
+			semconv.ServiceVersion(os.Getenv("GIT_SHA")),
 			attribute.Int("process.pid", os.Getpid()),
 		)),
 	)
