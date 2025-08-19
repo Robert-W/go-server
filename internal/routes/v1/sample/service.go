@@ -12,7 +12,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 )
 
-type sampleService struct {}
+type sampleService struct{}
 
 func (s *sampleService) listAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
 	span := monitoring.CreateDBSpan(ctx, "listAllSamples")
@@ -105,15 +105,13 @@ func (s *sampleService) deleteSampleById(ctx context.Context) (*sample, *v1.Erro
 	defer span.End()
 
 	sample := sample{
-		Id:        "321",
+		Id: "321",
 	}
 
 	span.SetStatus(codes.Ok, "Ok")
 	span.SetAttributes(
-		attribute.Int(constants.DB_AFFECTED_ROWS, 0),
+		attribute.Int(constants.DB_AFFECTED_ROWS, 1),
 	)
 
 	return &sample, nil
 }
-
-

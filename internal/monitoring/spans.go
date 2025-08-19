@@ -2,7 +2,6 @@ package monitoring
 
 import (
 	"context"
-	"os"
 	"runtime"
 
 	"github.com/robert-w/go-server/internal/constants"
@@ -12,7 +11,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func getCommmoAttributes() []attribute.KeyValue {
+func getCommonAttributes() []attribute.KeyValue {
 	// Set this value to 2 because this function should only be called by one of
 	// the CreateSpan functions below. Caller two will identify the function that
 	// called CreateSpan, which is what we are going for here
@@ -23,8 +22,6 @@ func getCommmoAttributes() []attribute.KeyValue {
 		semconv.CodeLineNumber(line),
 		semconv.CodeFunctionName(runtime.FuncForPC(pointer).Name()),
 		semconv.ProcessRuntimeVersion(runtime.Version()),
-		semconv.ServiceName(constants.SERVICE_NAME),
-		semconv.ServiceVersion(os.Getenv("GIT_SHA")),
 	}
 }
 
@@ -35,12 +32,12 @@ func CreateDBSpan(ctx context.Context, name string) trace.Span {
 	// creation. You can update the values later, but if you need to sample on an
 	// attribute, add it here
 	options := []trace.SpanStartOption{
-		trace.WithSpanKind(trace.SpanKindInternal),
-		trace.WithAttributes(getCommmoAttributes()...),
+		trace.WithSpanKind(trace.SpanKindServer),
+		trace.WithAttributes(getCommonAttributes()...),
 		trace.WithAttributes(
 			semconv.DBCollectionName(""),
-			semconv.DBSystemNamePostgreSQL,
 			semconv.DBOperationName(""),
+			semconv.DBSystemNamePostgreSQL,
 		),
 	}
 
@@ -56,8 +53,8 @@ func CreateSpan(ctx context.Context, name string) (context.Context, trace.Span) 
 	// creation. You can update the values later, but if you need to sample on an
 	// attribute, add it here
 	options := []trace.SpanStartOption{
-		trace.WithSpanKind(trace.SpanKindInternal),
-		trace.WithAttributes(getCommmoAttributes()...),
+		trace.WithSpanKind(trace.SpanKindServer),
+		trace.WithAttributes(getCommonAttributes()...),
 	}
 
 	return tracer.Start(ctx, name, options...)
