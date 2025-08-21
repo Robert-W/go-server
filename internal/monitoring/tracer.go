@@ -18,7 +18,7 @@ func NewTraceProvider(ctx context.Context) (*sdktrace.TracerProvider, error) {
 	exporter, err := otlptracehttp.New(
 		ctx,
 		otlptracehttp.WithCompression(otlptracehttp.GzipCompression),
-		otlptracehttp.WithEndpoint("0.0.0.0:4318"),
+		otlptracehttp.WithEndpoint(os.Getenv("OTEL_COLLECTOR_URL")),
 		otlptracehttp.WithInsecure(),
 	)
 	if err != nil {

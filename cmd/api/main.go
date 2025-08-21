@@ -8,11 +8,18 @@ import (
 	"os/signal"
 	"syscall"
 
+	dotenv "github.com/joho/godotenv"
 	"github.com/robert-w/go-server/internal/logger"
 	"github.com/robert-w/go-server/internal/server"
 )
 
 func main() {
+	// Load env variables, ignore the err here because this is only used for local
+	// development and this file wont exist in a deployed environment. The .env
+	// file is committed and should not contain and real secrets
+	_ = dotenv.Load()
+
+	// Setup our structured logger
 	logger.SetDefault()
 
 	// Listen to these signals and create a context to use for a graceful shutdown
