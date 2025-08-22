@@ -16,7 +16,7 @@ COPY . .
 # Use a cache to ensure repeated builds run faster
 RUN --mount=type=cache,target=/go-cache \
     --mount=type=cache,target=/gomod-cache \
-    go build -o api cmd/api/main.go
+    go build -ldflags="-s -w" -o api cmd/api/main.go
 
 ############################
 # Layer for production image
