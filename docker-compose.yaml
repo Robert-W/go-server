@@ -1,4 +1,15 @@
 services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: baked_potato
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
   otel-collector:
     image: otel/opentelemetry-collector:latest
     command: ["--config=/etc/otel-collector-config.yaml"]
@@ -10,3 +21,5 @@ services:
       - "55670:55679" # zpages extension
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+volumes:
+  db:
