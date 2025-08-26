@@ -66,5 +66,6 @@ func (api *apiServer) Shutdown() {
 	defer cancel()
 
 	api.traceProvider.Shutdown(ctx)
+	api.databasePool.Close()
 	api.server.Shutdown(ctx)
 }
