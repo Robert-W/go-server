@@ -7,18 +7,26 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/robert-w/go-server/internal/database"
 	"github.com/robert-w/go-server/internal/monitoring"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 type apiServer struct {
+	databasePool  *pgxpool.Pool
 	server        *http.Server
 	traceProvider *trace.TracerProvider
 }
 
 func New(ctx context.Context) (*apiServer, error) {
 	traceProvider, err := monitoring.NewTraceProvider(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	databasePool, err := database.NewPool(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +46,7 @@ func New(ctx context.Context) (*apiServer, error) {
 	registerV1Routes(v1Router)
 
 	return &apiServer{
+		databasePool: databasePool,
 		server: &http.Server{
 			Addr:    "0.0.0.0:3000",
 			Handler: router,
