@@ -2,7 +2,8 @@
 Practice project building an API server in Go
 
 ## Running the app
-`go run cmd/api/main.go`
+In one terminal session: `docker compose up`
+In another terminal: `go run cmd/api/main.go`
 
 ## Running tests
 To generate coverage and see it in the browser, run the following commands:
@@ -24,8 +25,3 @@ and then you can verify it by running the image locally
 ```bash
 docker run -p 3000:3000 <tag-name>
 ```
-
-## Telemetry
-If you want to see telemetry while developing, you just need to have a locally
-running collector. Run `docker compoose up` to spin one up and then you can see
-traces in your console.
