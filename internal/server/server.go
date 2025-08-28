@@ -38,9 +38,8 @@ func New(ctx context.Context) (*apiServer, error) {
 	systemRouter := router.PathPrefix("/system").Subrouter()
 	v1Router := router.PathPrefix("/api/v1").Subrouter()
 
-	// this claims to describe the name of the server, but gets mapped to
-	// server.address in the spans which is meant for DNS name or IP
-	v1Router.Use(otelmux.Middleware("0.0.0.0"))
+	// This span name will be server.address, which is meant for DNS name or IP
+	v1Router.Use(otelmux.Middleware("go-server"))
 
 	registerSystemRoutes(systemRouter)
 	registerV1Routes(v1Router)
@@ -48,7 +47,7 @@ func New(ctx context.Context) (*apiServer, error) {
 	return &apiServer{
 		databasePool: databasePool,
 		server: &http.Server{
-			Addr:    "0.0.0.0:3000",
+			Addr:    ":3000",
 			Handler: router,
 		},
 		traceProvider: traceProvider,
@@ -64,6 +63,9 @@ func (api *apiServer) Run() error {
 func (api *apiServer) Shutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	// Only do the shutdowns if we successfully created the apiServer
+	if api == nil { return }
 
 	api.traceProvider.Shutdown(ctx)
 	api.databasePool.Close()
