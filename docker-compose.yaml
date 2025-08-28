@@ -2,10 +2,7 @@ services:
   postgres:
     image: postgres
     restart: always
-    environment:
-      POSTGRES_USER: username
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: baked_potato
+    env_file: .env.compose
     ports:
       - "5432:5432"
     volumes:
@@ -17,7 +14,7 @@ services:
       - "1888:1888"   # pprof extension
       - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP http receiver
       - "55670:55679" # zpages extension
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
