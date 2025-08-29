@@ -1,7 +1,7 @@
 ##############################
 # Layer for building our image
 ##############################
-FROM golang:1.25-alpine AS build
+FROM golang:1.25 AS build
 
 WORKDIR /
 
@@ -13,6 +13,9 @@ ENV CGO_ENABLED=0 \
 # if you are adding sensitive files, you must add them to the .dockerignore
 COPY . .
 
+# Create a user here that we intend to run the scratch image with
+RUN useradd -u 42000 scooby
+
 # Use a cache to ensure repeated builds run faster
 RUN --mount=type=cache,target=/go-cache \
     --mount=type=cache,target=/gomod-cache \
@@ -23,9 +26,12 @@ RUN --mount=type=cache,target=/go-cache \
 ############################
 FROM scratch
 
+COPY --from=build /etc/passwd /etc/passwd
 COPY --from=build /api /bin/api
 
 # This is the port our API serves on
 EXPOSE 3000
+
+USER scooby
 
 ENTRYPOINT ["/bin/api"]
