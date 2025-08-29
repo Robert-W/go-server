@@ -80,7 +80,7 @@ func TestListSamples(t *testing.T) {
 		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples", nil)
 		res := httptest.NewRecorder()
 
-		testHandler.listSamples(res, req)
+		testHandler.list(res, req)
 
 		if res.Code != 200 {
 			t.Error("listSamples should return a 200")
@@ -106,7 +106,7 @@ func TestListSamples(t *testing.T) {
 		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples", nil)
 		res := httptest.NewRecorder()
 
-		testHandlerErr.listSamples(res, req)
+		testHandlerErr.list(res, req)
 
 		if res.Code != 500 {
 			t.Errorf("listSamples should return a 500, got %d", res.Code)
@@ -133,7 +133,7 @@ func TestCreateSamples(t *testing.T) {
 		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/samples", nil)
 		res := httptest.NewRecorder()
 
-		testHandler.createSamples(res, req)
+		testHandler.create(res, req)
 
 		if res.Code != 200 {
 			t.Error("createSamples should return a 200")
@@ -159,7 +159,7 @@ func TestCreateSamples(t *testing.T) {
 		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/samples", nil)
 		res := httptest.NewRecorder()
 
-		testHandlerErr.createSamples(res, req)
+		testHandlerErr.create(res, req)
 
 		if res.Code != 500 {
 			t.Errorf("createSamples should return a 500, got %d", res.Code)
@@ -186,7 +186,7 @@ func TestReadSample(t *testing.T) {
 		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandler.readSample(res, req)
+		testHandler.get(res, req)
 
 		if res.Code != 200 {
 			t.Error("readSample should return a 200")
@@ -208,7 +208,7 @@ func TestReadSample(t *testing.T) {
 		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandlerErr.readSample(res, req)
+		testHandlerErr.get(res, req)
 
 		if res.Code != 404 {
 			t.Errorf("readSample should return a 404, got %d", res.Code)
@@ -235,7 +235,7 @@ func TestUpdateSample(t *testing.T) {
 		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandler.updateSample(res, req)
+		testHandler.update(res, req)
 
 		if res.Code != 200 {
 			t.Error("updateSample should return a 200")
@@ -257,7 +257,7 @@ func TestUpdateSample(t *testing.T) {
 		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandlerErr.updateSample(res, req)
+		testHandlerErr.update(res, req)
 
 		if res.Code != 404 {
 			t.Errorf("updateSample should return a 404, got %d", res.Code)
@@ -284,7 +284,7 @@ func TestDeleteSample(t *testing.T) {
 		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandler.deleteSample(res, req)
+		testHandler.delete(res, req)
 
 		if res.Code != 200 {
 			t.Error("deleteSample should return a 200")
@@ -306,7 +306,7 @@ func TestDeleteSample(t *testing.T) {
 		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/samples/111", nil)
 		res := httptest.NewRecorder()
 
-		testHandlerErr.deleteSample(res, req)
+		testHandlerErr.delete(res, req)
 
 		if res.Code != 404 {
 			t.Errorf("deleteSample should return a 404, got %d", res.Code)

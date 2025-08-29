@@ -21,7 +21,7 @@ type handler struct {
 	service serviceInterface
 }
 
-func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
+func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 	ctx, span := monitoring.CreateSpan(req.Context(), "listSamples")
 	defer span.End()
 
@@ -46,7 +46,7 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 	res.Write(response)
 }
 
-func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
+func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 	ctx, span := monitoring.CreateSpan(req.Context(), "createSamples")
 	defer span.End()
 
@@ -71,7 +71,7 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 	res.Write(response)
 }
 
-func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
+func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 	ctx, span := monitoring.CreateSpan(req.Context(), "readSample")
 	defer span.End()
 
@@ -96,7 +96,7 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 	res.Write(response)
 }
 
-func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
+func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 	ctx, span := monitoring.CreateSpan(req.Context(), "updateSample")
 	defer span.End()
 
@@ -121,7 +121,7 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 	res.Write(response)
 }
 
-func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
+func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
 	ctx, span := monitoring.CreateSpan(req.Context(), "deleteSample")
 	defer span.End()
 

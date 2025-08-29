@@ -6,9 +6,9 @@ import (
 
 func RegisterRoutes(subrouter *mux.Router) {
 	sampleHandler := &handler{service: &sampleService{}}
-	subrouter.HandleFunc("/samples", sampleHandler.listSamples).Methods("GET")
-	subrouter.HandleFunc("/samples", sampleHandler.createSamples).Methods("POST")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.readSample).Methods("GET")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.updateSample).Methods("PUT")
-	subrouter.HandleFunc("/samples/{id}", sampleHandler.deleteSample).Methods("DELETE")
+	subrouter.HandleFunc("/samples", sampleHandler.list).Methods("GET")
+	subrouter.HandleFunc("/samples", sampleHandler.create).Methods("POST")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.get).Methods("GET")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.update).Methods("PUT")
+	subrouter.HandleFunc("/samples/{id}", sampleHandler.delete).Methods("DELETE")
 }
