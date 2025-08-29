@@ -1,0 +1,8 @@
+# Don't add files to the build or final images unless necessary
+.env
+.git
+.gitignore
+
+README.md
+docker-compose.yaml
+otel-collector-config.yaml

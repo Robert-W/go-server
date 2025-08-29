@@ -1,8 +1,13 @@
 # go-server
 Practice project building an API server in Go
 
+## Pre-requisites
+- Install [Go](https://go.dev/doc/install)
+- Install [Docker](https://docs.docker.com/get-docker)
+
 ## Running the app
-`go run cmd/api/main.go`
+In one terminal session: `docker compose up`
+In another terminal: `go run cmd/api/main.go`
 
 ## Running tests
 To generate coverage and see it in the browser, run the following commands:
@@ -12,7 +17,19 @@ go test -cover -coverprofile=coverage.out ./internal/...
 go tool cover -html=coverage.out
 ```
 
-## Telemetry
-If you want to see telemetry while developing, you just need to have a locally
-running collector. Run `docker compoose up` to spin one up and then you can see
-traces in your console.
+## Building with Docker
+You can build the image by running
+
+```bash
+docker build -t <tag-name> .
+```
+
+and then you can verify it by running the image locally
+
+```bash
+# In one terminal
+docker compose up
+
+# In another terminal
+docker run --env-file .env.docker -p 3000:3000 <tag-name>
+```

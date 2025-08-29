@@ -8,14 +8,18 @@ import (
 	"os/signal"
 	"syscall"
 
+	dotenv "github.com/joho/godotenv"
 	"github.com/robert-w/go-server/internal/logger"
 	"github.com/robert-w/go-server/internal/server"
 )
 
 func main() {
+	// Ignore any error here, we just use this locally for convenience
+	_ = dotenv.Load()
+
 	logger.SetDefault()
 
-	// Listen to these signals and create a context to use for a graceful shutdown
+	// Signals I want to catch for graceful shutdown
 	signals := []os.Signal{os.Interrupt, syscall.SIGTERM, syscall.SIGINT}
 
 	ctx, stop := signal.NotifyContext(context.Background(), signals...)
@@ -26,8 +30,9 @@ func main() {
 		slog.Error("Server failed creation", "ServerError", err)
 		os.Exit(1)
 	}
+
 	// Run the server in a go routine so the main go routine can catch the
-	// interrupt signals
+	// interrupt signals and so we dont block the main routine
 	go func() {
 		err := srv.Run()
 
