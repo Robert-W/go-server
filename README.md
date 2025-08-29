@@ -27,5 +27,9 @@ docker build -t <tag-name> .
 and then you can verify it by running the image locally
 
 ```bash
-docker run -p 3000:3000 <tag-name>
+# In one terminal
+docker compose up
+
+# In another terminal
+docker run --env-file .env.docker -p 3000:3000 <tag-name>
 ```
