@@ -22,7 +22,7 @@ type handler struct {
 }
 
 func (h *handler) list(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "listSamples")
+	ctx, span := monitoring.CreateSpan(req.Context(), "list")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
@@ -47,7 +47,7 @@ func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) create(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "createSamples")
+	ctx, span := monitoring.CreateSpan(req.Context(), "create")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
@@ -72,7 +72,7 @@ func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) get(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "readSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "get")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
@@ -97,7 +97,7 @@ func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) update(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "updateSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "update")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
@@ -122,7 +122,7 @@ func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "deleteSample")
+	ctx, span := monitoring.CreateSpan(req.Context(), "delete")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
