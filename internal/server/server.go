@@ -65,7 +65,9 @@ func (api *apiServer) Shutdown() {
 	defer cancel()
 
 	// Only do the shutdowns if we successfully created the apiServer
-	if api == nil { return }
+	if api == nil {
+		return
+	}
 
 	api.traceProvider.Shutdown(ctx)
 	api.databasePool.Close()
