@@ -48,7 +48,9 @@ func New(ctx context.Context) (*apiServer, error) {
 		databasePool: databasePool,
 		server: &http.Server{
 			Addr:    ":3000",
-			Handler: router,
+			Handler: http.TimeoutHandler(router, 5 * time.Second, "Request took too long to process"),
+			ReadHeaderTimeout: 500 * time.Millisecond,
+			ReadTimeout: 500 * time.Millisecond,
 		},
 		traceProvider: traceProvider,
 	}, nil
