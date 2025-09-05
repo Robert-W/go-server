@@ -21,12 +21,6 @@ type Sample struct {
 	Id string `json:"id"`
 }
 
-	// subrouter.HandleFunc("/samples", sampleHandler.listSamples).Methods("GET")
-	// subrouter.HandleFunc("/samples", sampleHandler.createSamples).Methods("POST")
-	// subrouter.HandleFunc("/samples/{id}", sampleHandler.readSample).Methods("GET")
-	// subrouter.HandleFunc("/samples/{id}", sampleHandler.updateSample).Methods("PUT")
-	// subrouter.HandleFunc("/samples/{id}", sampleHandler.deleteSample).Methods("DELETE")
-
 func TestSampleEndpoints(t *testing.T) {
 	var err error
 	var response *http.Response
@@ -35,15 +29,15 @@ func TestSampleEndpoints(t *testing.T) {
 
 	client := http.Client{}
 
-	// Create a user
+	// Create a sample
 	response, err = http.Post("0.0.0.0:3000/api/v1/samples", "application/json", nil)
 	if err != nil {
-		t.Errorf("Failed to create users: %v", err)
+		t.Errorf("Failed to create samples: %v", err)
 	}
 
 	println("Create Response: %v", response)
 
-	// Update that user
+	// Update that sample
 	url = fmt.Sprintf("0.0.0.0:3000/api/v1/samples/%s", "<id>")
 	request, err = http.NewRequest(http.MethodPut, url, nil)
 	if err != nil {
@@ -52,29 +46,29 @@ func TestSampleEndpoints(t *testing.T) {
 
 	response, err = client.Do(request)
 	if err != nil {
-		t.Errorf("Failed to update user: %v", err)
+		t.Errorf("Failed to update sample: %v", err)
 	}
 
 	println("Put Response: %v", response)
 
-	// Get the user by id
+	// Get the sample by id
 	url = fmt.Sprintf("0.0.0.0:3000/api/v1/samples/%s", "<id>")
 	response, err = http.Get(url)
 	if err != nil {
-		t.Errorf("Failed to get user: %v", err)
+		t.Errorf("Failed to get sample: %v", err)
 	}
 
 	println("Get Response: %v", response)
 
-	// List all users
+	// List all samples
 	response, err = http.Get("0.0.0.0:3000/api/v1/samples")
 	if err != nil {
-		t.Errorf("Failed to list users: %v", err)
+		t.Errorf("Failed to list samples: %v", err)
 	}
 
 	println("List Response: %v", response)
 
-	// Delete a user
+	// Delete a sample
 	url = fmt.Sprintf("0.0.0.0:3000/api/v1/samples/%s", "<id>")
 	request, err = http.NewRequest(http.MethodDelete, url, nil)
 	if err != nil {
@@ -83,7 +77,7 @@ func TestSampleEndpoints(t *testing.T) {
 
 	response, err = client.Do(request)
 	if err != nil {
-		t.Errorf("Failed to delete user: %v", err)
+		t.Errorf("Failed to delete sample: %v", err)
 	}
 
 	println("Delete Response: %v", response)
