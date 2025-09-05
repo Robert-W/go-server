@@ -12,7 +12,7 @@ test/unit:
 
 # make migrate/new name=migration-name
 migrate/new:
-	goose create $(name) go -dir ./migrations
+	goose create $(name) go -s -dir ./migrations
 
 # make docker/build tag=latest
 tag = latest
