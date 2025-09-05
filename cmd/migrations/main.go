@@ -21,13 +21,6 @@ import (
 	_ "github.com/robert-w/go-server/migrations"
 )
 
-// This is the current migration version. If we are unable to apply the
-// migrations, to be safe, we roll back to this version.
-const CURRENT_VERSION = 1
-
-// Exhaustive list of operations that can be passed in as arguments
-var VALID_OPERATIONS = []string{"up", "down"}
-
 func main() {
 	// Ignore any error here, we just use this locally for convenience
 	_ = dotenv.Load()
@@ -43,15 +36,33 @@ func main() {
 		var err error
 		var provider *goose.Provider
 		var pool *pgxpool.Pool
+		var result *goose.MigrationResult
 		var results []*goose.MigrationResult
+
+		VALID_OPERATIONS := []string{"up", "down", "create"}
 
 		// Parse any command line flags here
 		operation := flag.String("op", "", fmt.Sprintf("Type of migration to perform, must be one of: [%s]", strings.Join(VALID_OPERATIONS, " ")))
+		name := flag.String("name", "", "When op is 'create', the name of the migration we are creating")
 		flag.Parse()
 
 		// Validate any flags and error if appropriate
 		if !slices.Contains(VALID_OPERATIONS, *operation) {
 			slog.Error("Invalid operation provided", "expected_one_of", VALID_OPERATIONS, "received", *operation)
+			stop()
+			return
+		}
+
+		if *operation == "create" && *name == "" {
+			slog.Error("Missing required argument. When the 'op' flag is 'create', a 'name' flag is required.")
+			stop()
+			return
+		}
+
+		// Creating migrations doesnt require a db or provider, so handle that here
+		if *operation == "create" {
+			slog.Info("Creating migration")
+			createMigration(*name)
 			stop()
 			return
 		}
@@ -76,13 +87,17 @@ func main() {
 			return
 		}
 
-		slog.Info("Starting Migrations")
+		slog.Info("Starting migrations")
 
+		// create was handled above, the only valid remaining cases are up and down
 		switch *operation {
 		case "up":
 			results, err = provider.Up(ctx)
 		case "down":
-			results, err = provider.DownTo(ctx, CURRENT_VERSION-1)
+			// Coerce the result into an slice so I can handle the results the same
+			// later on in the code
+			result, err = provider.Down(ctx)
+			results = append(results, result)
 		}
 
 		if err != nil {
@@ -92,7 +107,7 @@ func main() {
 		}
 
 		for _, result := range results {
-			slog.Info("Migration Result",
+			slog.Info("Migration result",
 				"Direction", result.Direction,
 				"Duration", result.Duration.Milliseconds(),
 				"Empty", result.Empty,
@@ -111,5 +126,17 @@ func main() {
 func cleanup(provider *goose.Provider) {
 	if provider != nil {
 		provider.Close()
+	}
+}
+
+func createMigration(name string) {
+	err := goose.Create(nil, "migrations", name, "go")
+	if err != nil {
+		slog.Error("Error creating migration", "error", err)
+	}
+	// Convert the migration from a timestamp to a version number
+	err = goose.Fix("migrations")
+	if err != nil {
+		slog.Error("Error fixing migration", "error", err)
 	}
 }
