@@ -4,7 +4,6 @@ Practice project building an API server in Go
 ## Pre-requisites
 - Install [Go](https://go.dev/doc/install)
 - Install [Docker](https://docs.docker.com/get-docker)
-- Install [Goose](https://pressly.github.io/goose/installation/)
 
 ## Running the app
 In one terminal session: `docker compose up`

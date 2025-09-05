@@ -10,10 +10,6 @@ audit:
 test/unit:
 	go test -race -shuffle=on -v -cover -coverprofile=./coverage.out ./internal/...
 
-# make migrate/new name=migration-name
-migrate/new:
-	goose create $(name) go -s -dir ./migrations
-
 # make docker/build tag=latest
 tag = latest
 docker/build:
