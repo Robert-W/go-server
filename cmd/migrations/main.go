@@ -59,6 +59,10 @@ func main() {
 			return
 		}
 
+		// Temporary until I figure out how I want to invoke this
+		// Command line arguments to run up or down migrations
+		// provider.DownTo(ctx, CURRENT_VERSION-1)
+
 		results, err := provider.Up(ctx)
 		if err != nil {
 			slog.Error("Failed to run migrations", "migration_error", err)
@@ -73,9 +77,6 @@ func main() {
 				"Duration", result.Duration.Milliseconds(),
 			)
 		}
-
-		// Temporary until I figure out how I want to invoke this
-		provider.DownTo(ctx, CURRENT_VERSION-1)
 
 		slog.Info(fmt.Sprintf("Ran %d migrations.", len(results)))
 		stop()
