@@ -72,6 +72,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	ctx, span := monitoring.CreateSpan(ctx, "Running Migrations")
 	slog.Info("Starting migrations")
 
 	// create was handled above, the only valid remaining cases are up and down
@@ -84,11 +85,13 @@ func main() {
 
 	if err != nil {
 		slog.Error("Failed to run migrations", "migration_error", err)
+		span.End()
 		cleanup(ctx, pool, tracerProvider)
 		os.Exit(1)
 	}
 
 	slog.Info("Migrations complete")
+	span.End()
 	cleanup(ctx, pool, tracerProvider)
 	os.Exit(0)
 }
