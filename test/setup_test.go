@@ -19,6 +19,10 @@ func TestMain(m *testing.M) {
 
 	ctx := context.Background()
 
+	// These are set and/or deployed in docker-compose.test.yaml
+	os.Setenv("OTEL_COLLECTOR_URL", "0.0.0.0:4318")
+	os.Setenv("DATABASE_URL", "postgres://username:password@0.0.0.0:5432/sweet_potato")
+
 	// Setup tracing
 	tracerProvider, err = monitoring.NewTraceProvider(ctx)
 	if err != nil {
@@ -30,6 +34,7 @@ func TestMain(m *testing.M) {
 	pool, err = database.NewPool(ctx, tracerProvider)
 	if err != nil {
 		slog.Error("Error connecting to database", "error", err)
+		tracerProvider.Shutdown(ctx)
 		os.Exit(1)
 	}
 
@@ -37,6 +42,7 @@ func TestMain(m *testing.M) {
 	err = database.RunUpMigration(ctx, pool)
 	if err != nil {
 		slog.Error("Error running migrations", "error", err)
+		tracerProvider.Shutdown(ctx)
 		pool.Close()
 		os.Exit(1)
 	}
@@ -47,10 +53,12 @@ func TestMain(m *testing.M) {
 	err = database.RunDownMigration(ctx, pool)
 	if err != nil {
 		slog.Error("Error cleaning up database", "error", err)
+		tracerProvider.Shutdown(ctx)
 		pool.Close()
 		os.Exit(1)
 	}
 
+	tracerProvider.Shutdown(ctx)
 	pool.Close()
 	os.Exit(exitCode)
 }

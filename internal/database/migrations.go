@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -15,7 +17,7 @@ func RunUpMigration(ctx context.Context, pool *pgxpool.Pool) error {
 	provider, err := goose.NewProvider(
 		database.DialectPostgres,
 		stdlib.OpenDBFromPool(pool),
-		os.DirFS("migrations"),
+		os.DirFS(getMigrationsDirectory()),
 	)
 	if err != nil {
 		return err
@@ -34,7 +36,7 @@ func RunDownMigration(ctx context.Context, pool *pgxpool.Pool) error {
 	provider, err := goose.NewProvider(
 		database.DialectPostgres,
 		stdlib.OpenDBFromPool(pool),
-		os.DirFS("migrations"),
+		os.DirFS(getMigrationsDirectory()),
 	)
 	if err != nil {
 		return err
@@ -58,4 +60,13 @@ func printResult(results []*goose.MigrationResult) {
 			"Source", result.Source,
 		)
 	}
+}
+
+// Gets the migrations directory path from the root by traversing from here to
+// there, if we move this file/function, the path must be updated
+func getMigrationsDirectory() string {
+	_, file, _, _ := runtime.Caller(0)
+	migrationsDir := filepath.Join(filepath.Dir(file), "../../migrations")
+
+	return migrationsDir
 }
