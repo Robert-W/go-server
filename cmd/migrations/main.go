@@ -10,13 +10,10 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jackc/pgx/v5/stdlib"
 	dotenv "github.com/joho/godotenv"
 	"github.com/pressly/goose/v3"
-	"github.com/pressly/goose/v3/database"
-	postgres "github.com/robert-w/go-server/internal/database"
+	"github.com/robert-w/go-server/internal/database"
 	"github.com/robert-w/go-server/internal/logger"
-	_ "github.com/robert-w/go-server/migrations"
 )
 
 func main() {
@@ -31,8 +28,6 @@ func main() {
 	var err error
 	var provider *goose.Provider
 	var pool *pgxpool.Pool
-	var result *goose.MigrationResult
-	var results []*goose.MigrationResult
 
 	VALID_OPERATIONS := []string{"up", "down", "create"}
 
@@ -62,20 +57,9 @@ func main() {
 		}
 	}
 
-	pool, err = postgres.NewPool(ctx)
+	pool, err = database.NewPool(ctx)
 	if err != nil {
 		slog.Error("Unable to create pool", "pool_error", err)
-		os.Exit(1)
-	}
-
-	provider, err = goose.NewProvider(
-		database.DialectPostgres,
-		stdlib.OpenDBFromPool(pool),
-		nil,
-	)
-	if err != nil {
-		slog.Error("Unable to create Provider", "provider_error", err)
-		cleanup(pool, nil)
 		os.Exit(1)
 	}
 
@@ -84,12 +68,9 @@ func main() {
 	// create was handled above, the only valid remaining cases are up and down
 	switch *operation {
 	case "up":
-		results, err = provider.Up(ctx)
+		err = database.RunUpMigration(ctx, pool)
 	case "down":
-		// Coerce the result into an slice so I can handle the results the same
-		// later on in the code
-		result, err = provider.Down(ctx)
-		results = append(results, result)
+		err = database.RunDownMigration(ctx, pool)
 	}
 
 	if err != nil {
@@ -98,16 +79,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	for _, result := range results {
-		slog.Info("Migration result",
-			"Direction", result.Direction,
-			"Duration", result.Duration.Milliseconds(),
-			"Empty", result.Empty,
-			"Source", result.Source,
-		)
-	}
-
-	slog.Info(fmt.Sprintf("Ran %d migration(s).", len(results)))
+	slog.Info("Migrations complete")
 	cleanup(pool, provider)
 	os.Exit(0)
 }
@@ -127,7 +99,7 @@ func cleanup(pool *pgxpool.Pool, provider *goose.Provider) {
 // from using a timestamp to using versions
 // The return value indicates whether or not these operations were successful
 func createMigration(name string) bool {
-	err := goose.Create(nil, "migrations", name, "go")
+	err := goose.Create(nil, "migrations", name, "sql")
 	if err != nil {
 		slog.Error("Error creating migration", "error", err)
 		return false
