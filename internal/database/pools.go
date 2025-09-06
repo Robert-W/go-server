@@ -24,7 +24,10 @@ func NewPool(ctx context.Context, tracerProvider *trace.TracerProvider) (*pgxpoo
 	config.MinConns = 4
 	config.MinIdleConns = 4
 
-	config.ConnConfig.Tracer = otelpgx.NewTracer(otelpgx.WithTracerProvider(tracerProvider))
+	config.ConnConfig.Tracer = otelpgx.NewTracer(
+		otelpgx.WithTracerProvider(tracerProvider),
+		otelpgx.WithTrimSQLInSpanName(),
+	)
 
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
