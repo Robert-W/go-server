@@ -14,6 +14,8 @@ import (
 	"github.com/pressly/goose/v3"
 	"github.com/robert-w/go-server/internal/database"
 	"github.com/robert-w/go-server/internal/logger"
+	"github.com/robert-w/go-server/internal/monitoring"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
@@ -26,8 +28,8 @@ func main() {
 	ctx := context.Background()
 
 	var err error
-	var provider *goose.Provider
 	var pool *pgxpool.Pool
+	var tracerProvider *trace.TracerProvider
 
 	VALID_OPERATIONS := []string{"up", "down", "create"}
 
@@ -57,9 +59,16 @@ func main() {
 		}
 	}
 
-	pool, err = database.NewPool(ctx)
+	tracerProvider, err = monitoring.NewTraceProvider(ctx)
+	if err != nil {
+		slog.Error("Unable to create tracing provider", "error", err)
+		os.Exit(1)
+	}
+
+	pool, err = database.NewPool(ctx, tracerProvider)
 	if err != nil {
 		slog.Error("Unable to create pool", "pool_error", err)
+		tracerProvider.Shutdown(ctx)
 		os.Exit(1)
 	}
 
@@ -75,24 +84,19 @@ func main() {
 
 	if err != nil {
 		slog.Error("Failed to run migrations", "migration_error", err)
-		cleanup(pool, provider)
+		cleanup(ctx, pool, tracerProvider)
 		os.Exit(1)
 	}
 
 	slog.Info("Migrations complete")
-	cleanup(pool, provider)
+	cleanup(ctx, pool, tracerProvider)
 	os.Exit(0)
 }
 
 // Perform any cleanup and close any resources
-func cleanup(pool *pgxpool.Pool, provider *goose.Provider) {
-	if pool != nil {
+func cleanup(ctx context.Context, pool *pgxpool.Pool, tracerProvider *trace.TracerProvider) {
 		pool.Close()
-	}
-
-	if provider != nil {
-		provider.Close()
-	}
+		tracerProvider.Shutdown(ctx)
 }
 
 // Function to wrap the creation of a migration and the conversion of it's name

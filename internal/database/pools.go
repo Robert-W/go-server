@@ -5,10 +5,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/exaring/otelpgx"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-func NewPool(ctx context.Context) (*pgxpool.Pool, error) {
+func NewPool(ctx context.Context, tracerProvider *trace.TracerProvider) (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
@@ -21,6 +23,8 @@ func NewPool(ctx context.Context) (*pgxpool.Pool, error) {
 	config.MaxConns = 8
 	config.MinConns = 4
 	config.MinIdleConns = 4
+
+	config.ConnConfig.Tracer = otelpgx.NewTracer(otelpgx.WithTracerProvider(tracerProvider))
 
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {

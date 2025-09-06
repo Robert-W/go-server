@@ -17,16 +17,16 @@ import (
 type apiServer struct {
 	databasePool  *pgxpool.Pool
 	server        *http.Server
-	traceProvider *trace.TracerProvider
+	tracerProvider *trace.TracerProvider
 }
 
 func New(ctx context.Context) (*apiServer, error) {
-	traceProvider, err := monitoring.NewTraceProvider(ctx)
+	tracerProvider, err := monitoring.NewTraceProvider(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	databasePool, err := database.NewPool(ctx)
+	databasePool, err := database.NewPool(ctx, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func New(ctx context.Context) (*apiServer, error) {
 			ReadHeaderTimeout: 500 * time.Millisecond,
 			ReadTimeout: 500 * time.Millisecond,
 		},
-		traceProvider: traceProvider,
+		tracerProvider: tracerProvider,
 	}, nil
 }
 
@@ -71,7 +71,7 @@ func (api *apiServer) Shutdown() {
 		return
 	}
 
-	api.traceProvider.Shutdown(ctx)
+	api.tracerProvider.Shutdown(ctx)
 	api.databasePool.Close()
 	api.server.Shutdown(ctx)
 }
