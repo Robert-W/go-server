@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db:/var/lib/postgresql/data_test
+      - db_test:/var/lib/postgresql/data_test
   otel-collector:
     image: otel/opentelemetry-collector:latest
     command: ["--config=/etc/otel-collector-config.yaml"]
@@ -22,5 +22,5 @@ services:
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
 volumes:
-  db:
+  db_test:
 
