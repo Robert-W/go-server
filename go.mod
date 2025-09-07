@@ -3,6 +3,7 @@ module github.com/robert-w/go-server
 go 1.24.5
 
 require (
+	github.com/exaring/otelpgx v0.9.3
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/pressly/goose/v3 v3.25.0
@@ -14,7 +15,6 @@ require (
 )
 
 require (
-	github.com/exaring/otelpgx v0.9.3 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
@@ -30,7 +30,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1 // indirect
 	github.com/jackc/pgx/v5 v5.7.5
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect

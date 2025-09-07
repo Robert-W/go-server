@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/robert-w/go-server/internal/monitoring"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
 )
@@ -14,21 +15,24 @@ func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.list")
 	defer span.End()
 
+	one, _ := uuid.NewV7()
+	two, _ := uuid.NewV7()
+	three, _ := uuid.NewV7()
 	users := []user{
 		{
-			Id:        "111",
-			Value:     "First User",
-			Timestamp: time.Now(),
+			Id:      one,
+			Name:    "First User",
+			Created: time.Now(),
 		},
 		{
-			Id:        "222",
-			Value:     "Second User",
-			Timestamp: time.Now(),
+			Id:      two,
+			Name:    "Second User",
+			Created: time.Now(),
 		},
 		{
-			Id:        "333",
-			Value:     "Third User",
-			Timestamp: time.Now(),
+			Id:      three,
+			Name:    "Third User",
+			Created: time.Now(),
 		},
 	}
 
@@ -39,11 +43,12 @@ func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.create")
 	defer span.End()
 
+	id, _ := uuid.NewV7()
 	users := []user{
 		{
-			Id:        "111",
-			Value:     "New User",
-			Timestamp: time.Now(),
+			Id:      id,
+			Name:    "New User",
+			Created: time.Now(),
 		},
 	}
 
@@ -54,10 +59,11 @@ func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.get")
 	defer span.End()
 
+	id, _ := uuid.NewV7()
 	user := user{
-		Id:        "123",
-		Value:     "User Read",
-		Timestamp: time.Now(),
+		Id:      id,
+		Name:    "User Read",
+		Created: time.Now(),
 	}
 
 	return &user, nil
@@ -67,10 +73,11 @@ func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.update")
 	defer span.End()
 
+	id, _ := uuid.NewV7()
 	user := user{
-		Id:        "321",
-		Value:     "User Update",
-		Timestamp: time.Now(),
+		Id:      id,
+		Name:    "User Update",
+		Created: time.Now(),
 	}
 
 	return &user, nil
@@ -80,8 +87,9 @@ func (s *userService) delete(ctx context.Context) (*user, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.delete")
 	defer span.End()
 
+	id, _ := uuid.NewV7()
 	user := user{
-		Id: "321",
+		Id: id,
 	}
 
 	return &user, nil
