@@ -1,4 +1,4 @@
-package sample
+package user
 
 import (
 	"context"
@@ -12,81 +12,81 @@ import (
 )
 
 // Create a mock that returns a successful response
-type mockSampleService struct{}
+type mockUserService struct{}
 
-func (m *mockSampleService) listAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	samples := []sample{{Id: "111", Value: "First Sample", Timestamp: time.Now()}}
-	return &samples, nil
+func (m *mockUserService) list(ctx context.Context) (*[]user, *v1.Error) {
+	users := []user{{Id: "111", Value: "First User", Timestamp: time.Now()}}
+	return &users, nil
 }
 
-func (m *mockSampleService) createSamples(ctx context.Context) (*[]sample, *v1.Error) {
-	samples := []sample{{Id: "111", Value: "First Sample", Timestamp: time.Now()}}
-	return &samples, nil
+func (m *mockUserService) create(ctx context.Context) (*[]user, *v1.Error) {
+	users := []user{{Id: "111", Value: "First User", Timestamp: time.Now()}}
+	return &users, nil
 }
 
-func (m *mockSampleService) getSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return &sample{Id: "111", Value: "Sample"}, nil
+func (m *mockUserService) get(ctx context.Context) (*user, *v1.Error) {
+	return &user{Id: "111", Value: "User"}, nil
 }
 
-func (m *mockSampleService) updateSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return &sample{Id: "111", Value: "Sample"}, nil
+func (m *mockUserService) update(ctx context.Context) (*user, *v1.Error) {
+	return &user{Id: "111", Value: "User"}, nil
 }
 
-func (m *mockSampleService) deleteSampleById(ctx context.Context) (*sample, *v1.Error) {
-	return &sample{Id: "111", Value: "Sample"}, nil
+func (m *mockUserService) delete(ctx context.Context) (*user, *v1.Error) {
+	return &user{Id: "111", Value: "User"}, nil
 }
 
 // Create a mock that returns a versioned error
-type mockSampleServiceErr struct{}
+type mockUserServiceErr struct{}
 
-func (m *mockSampleServiceErr) listAllSamples(ctx context.Context) (*[]sample, *v1.Error) {
+func (m *mockUserServiceErr) list(ctx context.Context) (*[]user, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockSampleServiceErr) createSamples(ctx context.Context) (*[]sample, *v1.Error) {
+func (m *mockUserServiceErr) create(ctx context.Context) (*[]user, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockSampleServiceErr) getSampleById(ctx context.Context) (*sample, *v1.Error) {
+func (m *mockUserServiceErr) get(ctx context.Context) (*user, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockSampleServiceErr) updateSampleById(ctx context.Context) (*sample, *v1.Error) {
+func (m *mockUserServiceErr) update(ctx context.Context) (*user, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockSampleServiceErr) deleteSampleById(ctx context.Context) (*sample, *v1.Error) {
+func (m *mockUserServiceErr) delete(ctx context.Context) (*user, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
 // Types for parsing responses
-type mockResultSampleList struct {
-	Result []sample `json:"result"`
+type mockResultUserList struct {
+	Result []user `json:"result"`
 }
 
-type mockResultSample struct {
-	Result sample `json:"result"`
+type mockResultUser struct {
+	Result user `json:"result"`
 }
 
 type mockResultV1Error struct {
 	Error v1.Error `json:"error"`
 }
 
-func TestListSamples(t *testing.T) {
-	testHandler := handler{service: &mockSampleService{}}
-	testHandlerErr := handler{service: &mockSampleServiceErr{}}
+func TestListUsers(t *testing.T) {
+	testHandler := handler{service: &mockUserService{}}
+	testHandlerErr := handler{service: &mockUserServiceErr{}}
 
-	t.Run("should return samples in the format of a v1Response", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples", nil)
+	t.Run("should return users in the format of a v1Response", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/users", nil)
 		res := httptest.NewRecorder()
 
 		testHandler.list(res, req)
 
 		if res.Code != 200 {
-			t.Error("listSamples should return a 200")
+			t.Error("list should return a 200")
 		}
 
-		var result mockResultSampleList
+		var result mockResultUserList
 		err := json.Unmarshal(res.Body.Bytes(), &result)
 
 		if err != nil {
@@ -103,13 +103,13 @@ func TestListSamples(t *testing.T) {
 	})
 
 	t.Run("should return a v1Error if the underlying service returns an error", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples", nil)
+		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/users", nil)
 		res := httptest.NewRecorder()
 
 		testHandlerErr.list(res, req)
 
 		if res.Code != 500 {
-			t.Errorf("listSamples should return a 500, got %d", res.Code)
+			t.Errorf("list should return a 500, got %d", res.Code)
 		}
 
 		var result mockResultV1Error
@@ -125,21 +125,21 @@ func TestListSamples(t *testing.T) {
 	})
 }
 
-func TestCreateSamples(t *testing.T) {
-	testHandler := handler{service: &mockSampleService{}}
-	testHandlerErr := handler{service: &mockSampleServiceErr{}}
+func TestCreateUsers(t *testing.T) {
+	testHandler := handler{service: &mockUserService{}}
+	testHandlerErr := handler{service: &mockUserServiceErr{}}
 
-	t.Run("should return the created samples in the format of a v1Response", func(t *testing.T) {
-		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/samples", nil)
+	t.Run("should return the created users in the format of a v1Response", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/users", nil)
 		res := httptest.NewRecorder()
 
 		testHandler.create(res, req)
 
 		if res.Code != 200 {
-			t.Error("createSamples should return a 200")
+			t.Error("create should return a 200")
 		}
 
-		var result mockResultSampleList
+		var result mockResultUserList
 		err := json.Unmarshal(res.Body.Bytes(), &result)
 
 		if err != nil {
@@ -156,13 +156,13 @@ func TestCreateSamples(t *testing.T) {
 	})
 
 	t.Run("should return a v1Error if the underlying service returns an error", func(t *testing.T) {
-		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/samples", nil)
+		req := httptest.NewRequest("POST", "http://0.0.0.0:3000/api/v1/users", nil)
 		res := httptest.NewRecorder()
 
 		testHandlerErr.create(res, req)
 
 		if res.Code != 500 {
-			t.Errorf("createSamples should return a 500, got %d", res.Code)
+			t.Errorf("create should return a 500, got %d", res.Code)
 		}
 
 		var result mockResultV1Error
@@ -178,21 +178,21 @@ func TestCreateSamples(t *testing.T) {
 	})
 }
 
-func TestReadSample(t *testing.T) {
-	testHandler := handler{service: &mockSampleService{}}
-	testHandlerErr := handler{service: &mockSampleServiceErr{}}
+func TestGetUser(t *testing.T) {
+	testHandler := handler{service: &mockUserService{}}
+	testHandlerErr := handler{service: &mockUserServiceErr{}}
 
-	t.Run("should return the sample in the format of a v1Response", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+	t.Run("should return the user in the format of a v1Response", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandler.get(res, req)
 
 		if res.Code != 200 {
-			t.Error("readSample should return a 200")
+			t.Error("get should return a 200")
 		}
 
-		var result mockResultSample
+		var result mockResultUser
 		err := json.Unmarshal(res.Body.Bytes(), &result)
 
 		if err != nil {
@@ -205,13 +205,13 @@ func TestReadSample(t *testing.T) {
 	})
 
 	t.Run("should return a v1Error if the underlying service returns an error", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+		req := httptest.NewRequest("GET", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandlerErr.get(res, req)
 
 		if res.Code != 404 {
-			t.Errorf("readSample should return a 404, got %d", res.Code)
+			t.Errorf("get should return a 404, got %d", res.Code)
 		}
 
 		var result mockResultV1Error
@@ -227,21 +227,21 @@ func TestReadSample(t *testing.T) {
 	})
 }
 
-func TestUpdateSample(t *testing.T) {
-	testHandler := handler{service: &mockSampleService{}}
-	testHandlerErr := handler{service: &mockSampleServiceErr{}}
+func TestUpdateUser(t *testing.T) {
+	testHandler := handler{service: &mockUserService{}}
+	testHandlerErr := handler{service: &mockUserServiceErr{}}
 
-	t.Run("should return the updated sample in the format of a v1Response", func(t *testing.T) {
-		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+	t.Run("should return the updated user in the format of a v1Response", func(t *testing.T) {
+		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandler.update(res, req)
 
 		if res.Code != 200 {
-			t.Error("updateSample should return a 200")
+			t.Error("update should return a 200")
 		}
 
-		var result mockResultSample
+		var result mockResultUser
 		err := json.Unmarshal(res.Body.Bytes(), &result)
 
 		if err != nil {
@@ -254,13 +254,13 @@ func TestUpdateSample(t *testing.T) {
 	})
 
 	t.Run("should return a v1Error if the underlying service returns an error", func(t *testing.T) {
-		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+		req := httptest.NewRequest("PUT", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandlerErr.update(res, req)
 
 		if res.Code != 404 {
-			t.Errorf("updateSample should return a 404, got %d", res.Code)
+			t.Errorf("update should return a 404, got %d", res.Code)
 		}
 
 		var result mockResultV1Error
@@ -276,21 +276,21 @@ func TestUpdateSample(t *testing.T) {
 	})
 }
 
-func TestDeleteSample(t *testing.T) {
-	testHandler := handler{service: &mockSampleService{}}
-	testHandlerErr := handler{service: &mockSampleServiceErr{}}
+func TestDeleteUser(t *testing.T) {
+	testHandler := handler{service: &mockUserService{}}
+	testHandlerErr := handler{service: &mockUserServiceErr{}}
 
-	t.Run("should return the id of the deleted sample in the format of a v1Response", func(t *testing.T) {
-		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+	t.Run("should return the id of the deleted user in the format of a v1Response", func(t *testing.T) {
+		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandler.delete(res, req)
 
 		if res.Code != 200 {
-			t.Error("deleteSample should return a 200")
+			t.Error("delete should return a 200")
 		}
 
-		var result mockResultSample
+		var result mockResultUser
 		err := json.Unmarshal(res.Body.Bytes(), &result)
 
 		if err != nil {
@@ -303,13 +303,13 @@ func TestDeleteSample(t *testing.T) {
 	})
 
 	t.Run("should return a v1Error if the underlying service returns an error", func(t *testing.T) {
-		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/samples/111", nil)
+		req := httptest.NewRequest("DELETE", "http://0.0.0.0:3000/api/v1/users/111", nil)
 		res := httptest.NewRecorder()
 
 		testHandlerErr.delete(res, req)
 
 		if res.Code != 404 {
-			t.Errorf("deleteSample should return a 404, got %d", res.Code)
+			t.Errorf("delete should return a 404, got %d", res.Code)
 		}
 
 		var result mockResultV1Error

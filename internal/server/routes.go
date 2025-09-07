@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gorilla/mux"
 	"github.com/robert-w/go-server/internal/routes/system"
-	"github.com/robert-w/go-server/internal/routes/v1/sample"
+	"github.com/robert-w/go-server/internal/routes/v1/user"
 )
 
 func registerSystemRoutes(subrouter *mux.Router) {
@@ -11,5 +11,5 @@ func registerSystemRoutes(subrouter *mux.Router) {
 }
 
 func registerV1Routes(subrouter *mux.Router) {
-	sample.RegisterRoutes(subrouter)
+	user.RegisterRoutes(subrouter)
 }

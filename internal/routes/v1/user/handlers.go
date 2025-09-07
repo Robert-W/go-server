@@ -1,4 +1,4 @@
-package sample
+package user
 
 import (
 	"context"
@@ -10,11 +10,11 @@ import (
 )
 
 type serviceInterface interface {
-	listAllSamples(ctx context.Context) (*[]sample, *v1.Error)
-	createSamples(ctx context.Context) (*[]sample, *v1.Error)
-	getSampleById(ctx context.Context) (*sample, *v1.Error)
-	updateSampleById(ctx context.Context) (*sample, *v1.Error)
-	deleteSampleById(ctx context.Context) (*sample, *v1.Error)
+	list(ctx context.Context) (*[]user, *v1.Error)
+	create(ctx context.Context) (*[]user, *v1.Error)
+	get(ctx context.Context) (*user, *v1.Error)
+	update(ctx context.Context) (*user, *v1.Error)
+	delete(ctx context.Context) (*user, *v1.Error)
 }
 
 type handler struct {
@@ -27,8 +27,8 @@ func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	samples, serviceErr := h.service.listAllSamples(ctx)
-	response, _ := v1.PrepareResponse(ctx, samples, serviceErr)
+	users, serviceErr := h.service.list(ctx)
+	response, _ := v1.PrepareResponse(ctx, users, serviceErr)
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -52,8 +52,8 @@ func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	samples, serviceErr := h.service.createSamples(ctx)
-	response, _ := v1.PrepareResponse(ctx, samples, serviceErr)
+	users, serviceErr := h.service.create(ctx)
+	response, _ := v1.PrepareResponse(ctx, users, serviceErr)
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -77,8 +77,8 @@ func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	sample, serviceErr := h.service.getSampleById(ctx)
-	response, _ := v1.PrepareResponse(ctx, sample, serviceErr)
+	user, serviceErr := h.service.get(ctx)
+	response, _ := v1.PrepareResponse(ctx, user, serviceErr)
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -102,8 +102,8 @@ func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	sample, serviceErr := h.service.updateSampleById(ctx)
-	response, _ := v1.PrepareResponse(ctx, sample, serviceErr)
+	user, serviceErr := h.service.update(ctx)
+	response, _ := v1.PrepareResponse(ctx, user, serviceErr)
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -127,7 +127,7 @@ func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	output, serviceErr := h.service.deleteSampleById(ctx)
+	output, serviceErr := h.service.delete(ctx)
 	response, _ := v1.PrepareResponse(ctx, output, serviceErr)
 
 	// Set attributes and headers correctly based on what we have in serviceErr
