@@ -30,7 +30,7 @@ func TestUserService(t *testing.T) {
 	t.Run("should read a single user", func(t *testing.T) {
 		user, _ := service.get(ctx)
 
-		if user != nil {
+		if user == nil {
 			t.Error("Expected user, got nil")
 		}
 	})
@@ -38,7 +38,7 @@ func TestUserService(t *testing.T) {
 	t.Run("should update a single user", func(t *testing.T) {
 		user, _ := service.update(ctx)
 
-		if user != nil {
+		if user == nil {
 			t.Error("Expected user, got nil")
 		}
 	})
@@ -46,7 +46,7 @@ func TestUserService(t *testing.T) {
 	t.Run("should delete a single user", func(t *testing.T) {
 		user, _ := service.delete(ctx)
 
-		if user != nil {
+		if user == nil {
 			t.Error("Expected user, got nil")
 		}
 	})
