@@ -38,8 +38,6 @@ func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -63,8 +61,6 @@ func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -88,8 +84,6 @@ func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -113,8 +107,6 @@ func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -138,8 +130,6 @@ func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
 	res.Header().Set("Content-Type", "application/json")

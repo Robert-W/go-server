@@ -7,6 +7,7 @@ import (
 	"github.com/robert-w/go-server/internal/constants"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -25,7 +26,7 @@ func getCommonAttributes() []attribute.KeyValue {
 	}
 }
 
-func CreateDBSpan(ctx context.Context, name string) trace.Span {
+func CreateDBSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 	tracer := otel.Tracer(constants.SERVICE_NAME)
 
 	// Samplers apparently only have access to attributes provided at the time of
@@ -41,9 +42,10 @@ func CreateDBSpan(ctx context.Context, name string) trace.Span {
 		),
 	}
 
-	_, span := tracer.Start(ctx, name, options...)
+	ctx, span := tracer.Start(ctx, name, options...)
+	span.SetStatus(codes.Ok, "Ok")
 
-	return span
+	return ctx, span
 }
 
 func CreateSpan(ctx context.Context, name string) (context.Context, trace.Span) {
@@ -57,5 +59,8 @@ func CreateSpan(ctx context.Context, name string) (context.Context, trace.Span) 
 		trace.WithAttributes(getCommonAttributes()...),
 	}
 
-	return tracer.Start(ctx, name, options...)
+	ctx, span := tracer.Start(ctx, name, options...)
+	span.SetStatus(codes.Ok, "Ok")
+
+	return ctx, span
 }

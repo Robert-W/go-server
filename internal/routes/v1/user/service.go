@@ -6,13 +6,12 @@ import (
 
 	"github.com/robert-w/go-server/internal/monitoring"
 	v1 "github.com/robert-w/go-server/internal/routes/v1"
-	"go.opentelemetry.io/otel/codes"
 )
 
 type userService struct{}
 
 func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UserService.list")
+	_, span := monitoring.CreateDBSpan(ctx, "UserService.list")
 	defer span.End()
 
 	users := []user{
@@ -33,12 +32,11 @@ func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
 		},
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
 	return &users, nil
 }
 
 func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UserService.create")
+	_, span := monitoring.CreateDBSpan(ctx, "UserService.create")
 	defer span.End()
 
 	users := []user{
@@ -49,12 +47,11 @@ func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
 		},
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
 	return &users, nil
 }
 
 func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UserService.get")
+	_, span := monitoring.CreateDBSpan(ctx, "UserService.get")
 	defer span.End()
 
 	user := user{
@@ -63,12 +60,11 @@ func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
 		Timestamp: time.Now(),
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
 	return &user, nil
 }
 
 func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UserService.update")
+	_, span := monitoring.CreateDBSpan(ctx, "UserService.update")
 	defer span.End()
 
 	user := user{
@@ -77,18 +73,16 @@ func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
 		Timestamp: time.Now(),
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
 	return &user, nil
 }
 
 func (s *userService) delete(ctx context.Context) (*user, *v1.Error) {
-	span := monitoring.CreateDBSpan(ctx, "UserService.delete")
+	_, span := monitoring.CreateDBSpan(ctx, "UserService.delete")
 	defer span.End()
 
 	user := user{
 		Id: "321",
 	}
 
-	span.SetStatus(codes.Ok, "Ok")
 	return &user, nil
 }
