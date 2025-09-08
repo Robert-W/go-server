@@ -57,6 +57,7 @@ func printResult(results []*goose.MigrationResult) {
 			"Direction", result.Direction,
 			"Duration", result.Duration.Milliseconds(),
 			"Empty", result.Empty,
+			"Error", result.Error,
 			"Source", result.Source,
 		)
 	}
