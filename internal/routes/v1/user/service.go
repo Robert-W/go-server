@@ -21,17 +21,17 @@ func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
 	users := []user{
 		{
 			Id:      one,
-			Name:    "First User",
+			Email:    "First User",
 			Created: time.Now(),
 		},
 		{
 			Id:      two,
-			Name:    "Second User",
+			Email:    "Second User",
 			Created: time.Now(),
 		},
 		{
 			Id:      three,
-			Name:    "Third User",
+			Email:    "Third User",
 			Created: time.Now(),
 		},
 	}
@@ -47,7 +47,7 @@ func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
 	users := []user{
 		{
 			Id:      id,
-			Name:    "New User",
+			Email:    "New User",
 			Created: time.Now(),
 		},
 	}
@@ -62,7 +62,7 @@ func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
 	id, _ := uuid.NewV7()
 	user := user{
 		Id:      id,
-		Name:    "User Read",
+		Email:    "User Read",
 		Created: time.Now(),
 	}
 
@@ -76,7 +76,7 @@ func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
 	id, _ := uuid.NewV7()
 	user := user{
 		Id:      id,
-		Name:    "User Update",
+		Email:    "User Update",
 		Created: time.Now(),
 	}
 

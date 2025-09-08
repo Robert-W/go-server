@@ -17,29 +17,29 @@ type mockUserService struct{}
 
 func (m *mockUserService) list(ctx context.Context) (*[]user, *v1.Error) {
 	id, _ := uuid.NewV7()
-	users := []user{{Id: id, Name: "Scooby Doo", Created: time.Now()}}
+	users := []user{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
 	return &users, nil
 }
 
 func (m *mockUserService) create(ctx context.Context) (*[]user, *v1.Error) {
 	id, _ := uuid.NewV7()
-	users := []user{{Id: id, Name: "Scooby Doo", Created: time.Now()}}
+	users := []user{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
 	return &users, nil
 }
 
 func (m *mockUserService) get(ctx context.Context) (*user, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Name: "Scooby Doo"}, nil
+	return &user{Id: id, Email: "Scooby Doo"}, nil
 }
 
 func (m *mockUserService) update(ctx context.Context) (*user, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Name: "Scooby Doo"}, nil
+	return &user{Id: id, Email: "Scooby Doo"}, nil
 }
 
 func (m *mockUserService) delete(ctx context.Context) (*user, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Name: "Scooby Doo"}, nil
+	return &user{Id: id, Email: "Scooby Doo"}, nil
 }
 
 // Create a mock that returns a versioned error
@@ -103,7 +103,7 @@ func TestListUsers(t *testing.T) {
 			t.Error("Result is not the correct length")
 		}
 
-		if result.Result[0].Name != "Scooby Doo" {
+		if result.Result[0].Email != "Scooby Doo" {
 			t.Error("Result does not have the correct Name")
 		}
 	})
@@ -156,7 +156,7 @@ func TestCreateUsers(t *testing.T) {
 			t.Error("Result is not the correct length")
 		}
 
-		if result.Result[0].Name != "Scooby Doo" {
+		if result.Result[0].Email != "Scooby Doo" {
 			t.Error("Result does not have the correct Name")
 		}
 	})
@@ -205,7 +205,7 @@ func TestGetUser(t *testing.T) {
 			t.Errorf("Unable to decode response: %v", err)
 		}
 
-		if result.Result.Name != "Scooby Doo" {
+		if result.Result.Email != "Scooby Doo" {
 			t.Error("Result does not have the correct Name")
 		}
 	})
@@ -254,7 +254,7 @@ func TestUpdateUser(t *testing.T) {
 			t.Errorf("Unable to decode response: %v", err)
 		}
 
-		if result.Result.Name != "Scooby Doo" {
+		if result.Result.Email != "Scooby Doo" {
 			t.Error("Result does not have the correct Name")
 		}
 	})
@@ -303,7 +303,7 @@ func TestDeleteUser(t *testing.T) {
 			t.Errorf("Unable to decode response: %v", err)
 		}
 
-		if result.Result.Name != "Scooby Doo" {
+		if result.Result.Email != "Scooby Doo" {
 			t.Error("Result does not have the correct Name")
 		}
 	})

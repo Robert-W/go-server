@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 
 type user struct {
 	Id          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
+	Email       string    `json:"email"`
 	Created     time.Time `json:"created"`
 	LastUpdated time.Time `json:"last_updated"`
 }
