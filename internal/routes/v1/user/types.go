@@ -9,3 +9,7 @@ type user struct {
 	Created     time.Time `json:"created"`
 	LastUpdated time.Time `json:"last_updated"`
 }
+
+type input struct {
+	Email string `json:"email"`
+}
