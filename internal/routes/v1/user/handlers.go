@@ -30,6 +30,8 @@ func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 	users, serviceErr := h.service.list(ctx)
 	response, _ := v1.PrepareResponse(ctx, users, serviceErr)
 
+	res.Header().Set("Content-Type", "application/json")
+
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
 		res.WriteHeader(serviceErr.StatusCode)
@@ -40,7 +42,6 @@ func (h *handler) list(res http.ResponseWriter, req *http.Request) {
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
@@ -53,6 +54,8 @@ func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 	users, serviceErr := h.service.create(ctx)
 	response, _ := v1.PrepareResponse(ctx, users, serviceErr)
 
+	res.Header().Set("Content-Type", "application/json")
+
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
 		res.WriteHeader(serviceErr.StatusCode)
@@ -63,7 +66,6 @@ func (h *handler) create(res http.ResponseWriter, req *http.Request) {
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
@@ -76,6 +78,8 @@ func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 	user, serviceErr := h.service.get(ctx)
 	response, _ := v1.PrepareResponse(ctx, user, serviceErr)
 
+	res.Header().Set("Content-Type", "application/json")
+
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
 		res.WriteHeader(serviceErr.StatusCode)
@@ -86,7 +90,6 @@ func (h *handler) get(res http.ResponseWriter, req *http.Request) {
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
@@ -99,6 +102,8 @@ func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 	user, serviceErr := h.service.update(ctx)
 	response, _ := v1.PrepareResponse(ctx, user, serviceErr)
 
+	res.Header().Set("Content-Type", "application/json")
+
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
 		res.WriteHeader(serviceErr.StatusCode)
@@ -109,7 +114,6 @@ func (h *handler) update(res http.ResponseWriter, req *http.Request) {
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
@@ -122,6 +126,8 @@ func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
 	output, serviceErr := h.service.delete(ctx)
 	response, _ := v1.PrepareResponse(ctx, output, serviceErr)
 
+	res.Header().Set("Content-Type", "application/json")
+
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
 		res.WriteHeader(serviceErr.StatusCode)
@@ -132,6 +138,5 @@ func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
