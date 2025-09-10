@@ -10,11 +10,11 @@ import (
 )
 
 type serviceInterface interface {
-	list(ctx context.Context) (*[]user, *v1.Error)
-	create(ctx context.Context) (*[]user, *v1.Error)
-	get(ctx context.Context) (*user, *v1.Error)
-	update(ctx context.Context) (*user, *v1.Error)
-	delete(ctx context.Context) (*user, *v1.Error)
+	list(ctx context.Context) (*[]User, *v1.Error)
+	create(ctx context.Context) (*[]User, *v1.Error)
+	get(ctx context.Context) (*User, *v1.Error)
+	update(ctx context.Context) (*User, *v1.Error)
+	delete(ctx context.Context) (*User, *v1.Error)
 }
 
 type handler struct {

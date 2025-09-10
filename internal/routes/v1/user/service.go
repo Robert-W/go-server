@@ -11,14 +11,14 @@ import (
 
 type userService struct{}
 
-func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
+func (s *userService) list(ctx context.Context) (*[]User, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.list")
 	defer span.End()
 
 	one, _ := uuid.NewV7()
 	two, _ := uuid.NewV7()
 	three, _ := uuid.NewV7()
-	users := []user{
+	users := []User{
 		{
 			Id:      one,
 			Email:    "First User",
@@ -39,12 +39,12 @@ func (s *userService) list(ctx context.Context) (*[]user, *v1.Error) {
 	return &users, nil
 }
 
-func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
+func (s *userService) create(ctx context.Context) (*[]User, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.create")
 	defer span.End()
 
 	id, _ := uuid.NewV7()
-	users := []user{
+	users := []User{
 		{
 			Id:      id,
 			Email:    "New User",
@@ -55,12 +55,12 @@ func (s *userService) create(ctx context.Context) (*[]user, *v1.Error) {
 	return &users, nil
 }
 
-func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
+func (s *userService) get(ctx context.Context) (*User, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.get")
 	defer span.End()
 
 	id, _ := uuid.NewV7()
-	user := user{
+	user := User{
 		Id:      id,
 		Email:    "User Read",
 		Created: time.Now(),
@@ -69,12 +69,12 @@ func (s *userService) get(ctx context.Context) (*user, *v1.Error) {
 	return &user, nil
 }
 
-func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
+func (s *userService) update(ctx context.Context) (*User, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.update")
 	defer span.End()
 
 	id, _ := uuid.NewV7()
-	user := user{
+	user := User{
 		Id:      id,
 		Email:    "User Update",
 		Created: time.Now(),
@@ -83,12 +83,12 @@ func (s *userService) update(ctx context.Context) (*user, *v1.Error) {
 	return &user, nil
 }
 
-func (s *userService) delete(ctx context.Context) (*user, *v1.Error) {
+func (s *userService) delete(ctx context.Context) (*User, *v1.Error) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.delete")
 	defer span.End()
 
 	id, _ := uuid.NewV7()
-	user := user{
+	user := User{
 		Id: id,
 	}
 

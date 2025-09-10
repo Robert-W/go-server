@@ -15,63 +15,63 @@ import (
 // Create a mock that returns a successful response
 type mockUserService struct{}
 
-func (m *mockUserService) list(ctx context.Context) (*[]user, *v1.Error) {
+func (m *mockUserService) list(ctx context.Context) (*[]User, *v1.Error) {
 	id, _ := uuid.NewV7()
-	users := []user{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
+	users := []User{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
 	return &users, nil
 }
 
-func (m *mockUserService) create(ctx context.Context) (*[]user, *v1.Error) {
+func (m *mockUserService) create(ctx context.Context) (*[]User, *v1.Error) {
 	id, _ := uuid.NewV7()
-	users := []user{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
+	users := []User{{Id: id, Email: "Scooby Doo", Created: time.Now()}}
 	return &users, nil
 }
 
-func (m *mockUserService) get(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserService) get(ctx context.Context) (*User, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Email: "Scooby Doo"}, nil
+	return &User{Id: id, Email: "Scooby Doo"}, nil
 }
 
-func (m *mockUserService) update(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserService) update(ctx context.Context) (*User, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Email: "Scooby Doo"}, nil
+	return &User{Id: id, Email: "Scooby Doo"}, nil
 }
 
-func (m *mockUserService) delete(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserService) delete(ctx context.Context) (*User, *v1.Error) {
 	id, _ := uuid.NewV7()
-	return &user{Id: id, Email: "Scooby Doo"}, nil
+	return &User{Id: id, Email: "Scooby Doo"}, nil
 }
 
 // Create a mock that returns a versioned error
 type mockUserServiceErr struct{}
 
-func (m *mockUserServiceErr) list(ctx context.Context) (*[]user, *v1.Error) {
+func (m *mockUserServiceErr) list(ctx context.Context) (*[]User, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockUserServiceErr) create(ctx context.Context) (*[]user, *v1.Error) {
+func (m *mockUserServiceErr) create(ctx context.Context) (*[]User, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 500, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockUserServiceErr) get(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserServiceErr) get(ctx context.Context) (*User, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockUserServiceErr) update(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserServiceErr) update(ctx context.Context) (*User, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
-func (m *mockUserServiceErr) delete(ctx context.Context) (*user, *v1.Error) {
+func (m *mockUserServiceErr) delete(ctx context.Context) (*User, *v1.Error) {
 	return nil, &v1.Error{Message: "Scooby Dooby Doo", StatusCode: 404, Original: errors.New("Mystery Inc")}
 }
 
 // Types for parsing responses
 type mockResultUserList struct {
-	Result []user `json:"result"`
+	Result []User `json:"result"`
 }
 
 type mockResultUser struct {
-	Result user `json:"result"`
+	Result User `json:"result"`
 }
 
 type mockResultV1Error struct {
