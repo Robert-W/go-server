@@ -6,12 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/robert-w/go-server/internal/monitoring"
-	v1 "github.com/robert-w/go-server/internal/routes/v1"
+	"github.com/robert-w/go-server/internal/response"
 )
 
 type userService struct{}
 
-func (s *userService) list(ctx context.Context) (*[]User, *v1.Error) {
+func (s *userService) list(ctx context.Context) (*[]User, *response.ErrorJsonV1) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.list")
 	defer span.End()
 
@@ -39,7 +39,7 @@ func (s *userService) list(ctx context.Context) (*[]User, *v1.Error) {
 	return &users, nil
 }
 
-func (s *userService) create(ctx context.Context) (*[]User, *v1.Error) {
+func (s *userService) create(ctx context.Context) (*[]User, *response.ErrorJsonV1) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.create")
 	defer span.End()
 
@@ -55,7 +55,7 @@ func (s *userService) create(ctx context.Context) (*[]User, *v1.Error) {
 	return &users, nil
 }
 
-func (s *userService) get(ctx context.Context) (*User, *v1.Error) {
+func (s *userService) get(ctx context.Context) (*User, *response.ErrorJsonV1) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.get")
 	defer span.End()
 
@@ -69,7 +69,7 @@ func (s *userService) get(ctx context.Context) (*User, *v1.Error) {
 	return &user, nil
 }
 
-func (s *userService) update(ctx context.Context) (*User, *v1.Error) {
+func (s *userService) update(ctx context.Context) (*User, *response.ErrorJsonV1) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.update")
 	defer span.End()
 
@@ -83,7 +83,7 @@ func (s *userService) update(ctx context.Context) (*User, *v1.Error) {
 	return &user, nil
 }
 
-func (s *userService) delete(ctx context.Context) (*User, *v1.Error) {
+func (s *userService) delete(ctx context.Context) (*User, *response.ErrorJsonV1) {
 	_, span := monitoring.CreateDBSpan(ctx, "UserService.delete")
 	defer span.End()
 
