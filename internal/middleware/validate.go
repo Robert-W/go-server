@@ -31,7 +31,7 @@ func ValidateMiddleware(
 	decoder := utils.SchemaDecoder
 	validate := utils.Validate
 
-	return func(w http.ResponseWriter, req *http.Request) {
+	return func(res http.ResponseWriter, req *http.Request) {
 		ctx, span := monitoring.CreateSpan(req.Context(), "ValidateMiddleware")
 		defer span.End()
 
@@ -45,7 +45,7 @@ func ValidateMiddleware(
 				span.SetStatus(codes.Error, err.Error())
 
 				slog.Error("Error from parseForm", "error", err)
-				w.WriteHeader(http.StatusBadRequest)
+				res.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
@@ -54,7 +54,7 @@ func ValidateMiddleware(
 				span.SetStatus(codes.Error, err.Error())
 
 				slog.Error("Error decoding req.Form", "error", err)
-				w.WriteHeader(http.StatusBadRequest)
+				res.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		}
@@ -67,7 +67,7 @@ func ValidateMiddleware(
 				span.SetStatus(codes.Error, err.Error())
 
 				slog.Error("Error decoding req.Body", "error", err)
-				w.WriteHeader(http.StatusBadRequest)
+				res.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		}
@@ -89,12 +89,12 @@ func ValidateMiddleware(
 			}
 
 			slog.Error("Error validating the struct", "error(s)", err, "details", details)
-			w.WriteHeader(http.StatusUnprocessableEntity)
+			res.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
 
 		// Store the bound struct in the request context
 		ctx = context.WithValue(ctx, "Input", structPtr)
-		next(w, req.WithContext(ctx))
+		next(res, req.WithContext(ctx))
 	}
 }
