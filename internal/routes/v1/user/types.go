@@ -11,11 +11,11 @@ type User struct {
 }
 
 type UserInput struct {
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 type UserPost struct {
-	Users []UserInput `json:"users"`
+	Users []UserInput `json:"users" validate:"required,dive"`
 }
 
 type UserPut = UserInput

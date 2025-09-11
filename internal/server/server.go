@@ -10,13 +10,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/robert-w/go-server/internal/database"
 	"github.com/robert-w/go-server/internal/monitoring"
+	"github.com/robert-w/go-server/internal/requestutil"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 type apiServer struct {
-	databasePool  *pgxpool.Pool
-	server        *http.Server
+	databasePool   *pgxpool.Pool
+	server         *http.Server
 	tracerProvider *trace.TracerProvider
 }
 
@@ -31,6 +32,12 @@ func New(ctx context.Context) (*apiServer, error) {
 		return nil, err
 	}
 
+	// Create some common utils that we will use to work with requests
+	utils := requestutil.New(
+		requestutil.WithSchemaDecoder(),
+		requestutil.WithValidator(),
+	)
+
 	router := mux.NewRouter()
 
 	// Create all of our subrouters and then pass them into functions to register
@@ -42,15 +49,15 @@ func New(ctx context.Context) (*apiServer, error) {
 	v1Router.Use(otelmux.Middleware("go-server"))
 
 	registerSystemRoutes(systemRouter)
-	registerV1Routes(v1Router)
+	registerV1Routes(utils, v1Router)
 
 	return &apiServer{
 		databasePool: databasePool,
 		server: &http.Server{
-			Addr:    ":3000",
-			Handler: http.TimeoutHandler(router, 5 * time.Second, "Request took too long to process"),
+			Addr:              ":3000",
+			Handler:           http.TimeoutHandler(router, 5*time.Second, "Request took too long to process"),
 			ReadHeaderTimeout: 500 * time.Millisecond,
-			ReadTimeout: 500 * time.Millisecond,
+			ReadTimeout:       500 * time.Millisecond,
 		},
 		tracerProvider: tracerProvider,
 	}, nil
