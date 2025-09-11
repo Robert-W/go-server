@@ -61,8 +61,8 @@ func ValidateMiddleware(
 
 		// Make an attempt to bind the req.Body to our provided structPtr
 		if req.ContentLength > 0 {
-			decoder := json.NewDecoder(req.Body)
-			if err := decoder.Decode(structPtr); err != nil {
+			jsondecoder := json.NewDecoder(req.Body)
+			if err := jsondecoder.Decode(structPtr); err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
