@@ -10,6 +10,9 @@ audit:
 test/unit:
 	go test -race -shuffle=on -v -cover -coverprofile=./coverage.out ./internal/...
 
+test/vc:
+	go tool cover -html=./coverage.out
+
 # make docker/build tag=latest
 tag = latest
 docker/build:
