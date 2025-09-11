@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/robert-w/go-server/internal/requestutil"
 )
 
 type Thing struct {
@@ -19,7 +19,10 @@ type ThingNoValidation struct {
 }
 
 func TestValidateMiddleware(t *testing.T) {
-	validate := validator.New(validator.WithRequiredStructEnabled())
+	utils := requestutil.New(
+		requestutil.WithSchemaDecoder(),
+		requestutil.WithValidator(),
+	)
 
 	t.Run("should return 400 if unable to unmarhsal the request", func(t *testing.T) {
 		next := func(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +34,7 @@ func TestValidateMiddleware(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", reader)
 		req.Header.Add("content-type", "application/json")
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &Thing{}, next)
+		middleware := ValidateMiddleware(utils, &Thing{}, next)
 
 		middleware(res, req)
 
@@ -50,7 +53,7 @@ func TestValidateMiddleware(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", reader)
 		req.Header.Add("content-type", "application/json")
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &Thing{}, next)
+		middleware := ValidateMiddleware(utils, &Thing{}, next)
 
 		middleware(res, req)
 
@@ -75,7 +78,7 @@ func TestValidateMiddleware(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", reader)
 		req.Header.Add("content-type", "application/json")
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &Thing{}, next)
+		middleware := ValidateMiddleware(utils, &Thing{}, next)
 
 		middleware(res, req)
 
@@ -99,7 +102,7 @@ func TestValidateMiddleware(t *testing.T) {
 
 		req := httptest.NewRequest("GET", fmt.Sprintf("/?email=%s", email), nil)
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &Thing{}, next)
+		middleware := ValidateMiddleware(utils, &Thing{}, next)
 
 		middleware(res, req)
 
@@ -124,7 +127,7 @@ func TestValidateMiddleware(t *testing.T) {
 		req := httptest.NewRequest("POST", "/?email=invalid", reader)
 		req.Header.Add("content-type", "application/json")
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &Thing{}, next)
+		middleware := ValidateMiddleware(utils, &Thing{}, next)
 
 		middleware(res, req)
 
@@ -150,7 +153,7 @@ func TestValidateMiddleware(t *testing.T) {
 		req := httptest.NewRequest("POST", "/", reader)
 		req.Header.Add("content-type", "application/json")
 		res := httptest.NewRecorder()
-		middleware := ValidateMiddleware(validate, &ThingNoValidation{}, next)
+		middleware := ValidateMiddleware(utils, &ThingNoValidation{}, next)
 
 		middleware(res, req)
 

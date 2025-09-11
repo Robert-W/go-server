@@ -9,8 +9,8 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/gorilla/schema"
 	"github.com/robert-w/go-server/internal/monitoring"
+	"github.com/robert-w/go-server/internal/requestutil"
 	"go.opentelemetry.io/otel/codes"
 )
 
@@ -24,9 +24,12 @@ import (
 // Usage:
 // subrouter.Handle("/users", ValidateMiddleware(validator, &User{}, userHandler.list)).Methods("GET")
 func ValidateMiddleware(
-	validate *validator.Validate,
+	utils *requestutil.RequestUtils,
 	structPtr any,
 	next http.HandlerFunc) func(w http.ResponseWriter, r *http.Request) {
+
+	decoder := utils.SchemaDecoder
+	validate := utils.Validate
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		ctx, span := monitoring.CreateSpan(req.Context(), "ValidateMiddleware")
@@ -46,8 +49,6 @@ func ValidateMiddleware(
 				return
 			}
 
-			decoder := schema.NewDecoder()
-			decoder.IgnoreUnknownKeys(true)
 			if err := decoder.Decode(structPtr, req.Form); err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
