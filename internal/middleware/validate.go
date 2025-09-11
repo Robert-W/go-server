@@ -26,7 +26,7 @@ import (
 func ValidateMiddleware(
 	utils *requestutil.RequestUtils,
 	structPtr any,
-	next http.HandlerFunc) func(w http.ResponseWriter, r *http.Request) {
+	next http.HandlerFunc) func(http.ResponseWriter, *http.Request) {
 
 	decoder := utils.SchemaDecoder
 	validate := utils.Validate
