@@ -3,14 +3,11 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
-	"log/slog"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/robert-w/go-server/internal/monitoring"
 	"github.com/robert-w/go-server/internal/requestutil"
+	"github.com/robert-w/go-server/internal/response"
 	"go.opentelemetry.io/otel/codes"
 )
 
@@ -20,7 +17,10 @@ import (
 // scenarios, it should do the following:
 // - Unable to Unmarshal Json into the given struct - 400
 // - Failure to validate the struct                 - 422
-
+//
+// This function currently returns a NewV1 response type since this server only
+// has one version. Future versions can abstract that out when needed.
+//
 // Usage:
 // subrouter.Handle("/users", ValidateMiddleware(validator, &User{}, userHandler.list)).Methods("GET")
 func ValidateMiddleware(
@@ -31,43 +31,67 @@ func ValidateMiddleware(
 	decoder := utils.SchemaDecoder
 	validate := utils.Validate
 
-	return func(res http.ResponseWriter, req *http.Request) {
-		ctx, span := monitoring.CreateSpan(req.Context(), "ValidateMiddleware")
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, span := monitoring.CreateSpan(r.Context(), "ValidateMiddleware")
 		defer span.End()
 
 		// Return from any error so we don't invoke the next handler
 
 		// ParseForm will attempt to get form data and/or query parameters, can add
 		// more type later
-		if req.URL.RawQuery != "" || req.Header.Get("Content-Type") == "application/x-www-form-urlencoded" {
-			if err := req.ParseForm(); err != nil {
+		if r.URL.RawQuery != "" || r.Header.Get("Content-Type") == "application/x-www-form-urlencoded" {
+			if err := r.ParseForm(); err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
-				slog.Error("Error from parseForm", "error", err)
-				res.WriteHeader(http.StatusBadRequest)
+				errjson := &response.ErrorJsonV1{
+					Message:    "Error parsing form and/or query parameters",
+					Original:   err,
+					StatusCode: http.StatusBadRequest,
+				}
+
+				// Ignore the error here, this won't cause a marshalling issue
+				res, _ := response.NewV1(ctx, nil, errjson)
+				w.WriteHeader(errjson.StatusCode)
+				w.Write(res)
 				return
 			}
 
-			if err := decoder.Decode(structPtr, req.Form); err != nil {
+			if err := decoder.Decode(structPtr, r.Form); err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
-				slog.Error("Error decoding req.Form", "error", err)
-				res.WriteHeader(http.StatusBadRequest)
+				errjson := &response.ErrorJsonV1{
+					Message:    "Error decoding form into desired type",
+					Original:   err,
+					StatusCode: http.StatusBadRequest,
+				}
+
+				// Ignore the error here, this won't cause a marshalling issue
+				res, _ := response.NewV1(ctx, nil, errjson)
+				w.WriteHeader(errjson.StatusCode)
+				w.Write(res)
 				return
 			}
 		}
 
 		// Make an attempt to bind the req.Body to our provided structPtr
-		if req.ContentLength > 0 {
-			jsondecoder := json.NewDecoder(req.Body)
+		if r.ContentLength > 0 {
+			jsondecoder := json.NewDecoder(r.Body)
 			if err := jsondecoder.Decode(structPtr); err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
-				slog.Error("Error decoding req.Body", "error", err)
-				res.WriteHeader(http.StatusBadRequest)
+				errjson := &response.ErrorJsonV1{
+					Message:    "Error decoding request body into desired type",
+					Original:   err,
+					StatusCode: http.StatusBadRequest,
+				}
+
+				// Ignore the error here, this won't cause a marshalling issue
+				res, _ := response.NewV1(ctx, nil, errjson)
+				w.WriteHeader(errjson.StatusCode)
+				w.Write(res)
 				return
 			}
 		}
@@ -77,24 +101,23 @@ func ValidateMiddleware(
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 
-			var validateErrs validator.ValidationErrors
-			var details []string
-			if errors.As(err, &validateErrs) {
-				for _, e := range validateErrs {
-					details = append(
-						details,
-						fmt.Sprintf("Field: %s, Value: %s", e.StructField(), e.Value()),
-					)
-				}
+			// If we want more custom error messaging, the validator library does have
+			// some options for getting more details out, but this is fine for now
+			errjson := &response.ErrorJsonV1{
+				Message:    err.Error(),
+				Original:   err,
+				StatusCode: http.StatusUnprocessableEntity,
 			}
 
-			slog.Error("Error validating the struct", "error(s)", err, "details", details)
-			res.WriteHeader(http.StatusUnprocessableEntity)
+			// Ignore the error here, this won't cause a marshalling issue
+			res, _ := response.NewV1(ctx, nil, errjson)
+			w.WriteHeader(errjson.StatusCode)
+			w.Write(res)
 			return
 		}
 
 		// Store the bound struct in the request context
 		ctx = context.WithValue(ctx, "Input", structPtr)
-		next(res, req.WithContext(ctx))
+		next(w, r.WithContext(ctx))
 	}
 }
