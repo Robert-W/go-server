@@ -49,7 +49,7 @@ func New(ctx context.Context) (*apiServer, error) {
 	v1Router.Use(otelmux.Middleware("go-server"))
 
 	registerSystemRoutes(systemRouter)
-	registerV1Routes(utils, v1Router)
+	registerV1Routes(v1Router, utils, databasePool)
 
 	return &apiServer{
 		databasePool: databasePool,
