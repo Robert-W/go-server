@@ -17,6 +17,21 @@ go test -cover -coverprofile=coverage.out ./internal/...
 go tool cover -html=coverage.out
 ```
 
+### Running integration tests
+This is currently a pain in the ass and there is a lot here to be desired, but
+I'll get to that later.
+
+```bash
+# Start the database
+docker compose -f docker-compose.test.yaml -d
+
+# Run the server, make sure the database url matches whats set in compose
+DATABASE_URL=postgres://username:password@0.0.0.0:5432/sweet_potato go run cmd/api/main.go
+
+# Run the tests
+go test ./test/...
+```
+
 ## Building with Docker
 You can build the image by running
 
