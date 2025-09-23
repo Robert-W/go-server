@@ -1,34 +1,37 @@
-package sample
+package user
 
 import (
 	"context"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/robert-w/go-server/internal/monitoring"
-	v1 "github.com/robert-w/go-server/internal/routes/v1"
+	"github.com/robert-w/go-server/internal/response"
 	"go.opentelemetry.io/otel/codes"
 )
 
 type serviceInterface interface {
-	listAllSamples(ctx context.Context) (*[]sample, *v1.Error)
-	createSamples(ctx context.Context) (*[]sample, *v1.Error)
-	getSampleById(ctx context.Context) (*sample, *v1.Error)
-	updateSampleById(ctx context.Context) (*sample, *v1.Error)
-	deleteSampleById(ctx context.Context) (*sample, *v1.Error)
+	list(ctx context.Context) (*[]User, *response.ErrorJsonV1)
+	create(ctx context.Context, input *UserPost) (*[]User, *response.ErrorJsonV1)
+	get(ctx context.Context, id string) (*User, *response.ErrorJsonV1)
+	update(ctx context.Context, id string, input *UserPut) (*User, *response.ErrorJsonV1)
+	delete(ctx context.Context, id string) (*User, *response.ErrorJsonV1)
 }
 
 type handler struct {
 	service serviceInterface
 }
 
-func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "listSamples")
+func (h *handler) list(res http.ResponseWriter, req *http.Request) {
+	ctx, span := monitoring.CreateSpan(req.Context(), "list")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	samples, serviceErr := h.service.listAllSamples(ctx)
-	response, _ := v1.PrepareResponse(ctx, samples, serviceErr)
+	users, serviceErr := h.service.list(ctx)
+	response, _ := response.NewV1(ctx, users, serviceErr)
+
+	res.Header().Set("Content-Type", "application/json")
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -38,22 +41,22 @@ func (h *handler) listSamples(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
-func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "createSamples")
+func (h *handler) create(res http.ResponseWriter, req *http.Request) {
+	ctx, span := monitoring.CreateSpan(req.Context(), "create")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	samples, serviceErr := h.service.createSamples(ctx)
-	response, _ := v1.PrepareResponse(ctx, samples, serviceErr)
+	input := req.Context().Value("Input").(*UserPost)
+	users, serviceErr := h.service.create(ctx, input)
+	response, _ := response.NewV1(ctx, users, serviceErr)
+
+	res.Header().Set("Content-Type", "application/json")
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -63,22 +66,22 @@ func (h *handler) createSamples(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
-func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "readSample")
+func (h *handler) get(res http.ResponseWriter, req *http.Request) {
+	ctx, span := monitoring.CreateSpan(req.Context(), "get")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	sample, serviceErr := h.service.getSampleById(ctx)
-	response, _ := v1.PrepareResponse(ctx, sample, serviceErr)
+	vars := mux.Vars(req)
+	user, serviceErr := h.service.get(ctx, vars["id"])
+	response, _ := response.NewV1(ctx, user, serviceErr)
+
+	res.Header().Set("Content-Type", "application/json")
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -88,22 +91,23 @@ func (h *handler) readSample(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
-func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "updateSample")
+func (h *handler) update(res http.ResponseWriter, req *http.Request) {
+	ctx, span := monitoring.CreateSpan(req.Context(), "update")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	sample, serviceErr := h.service.updateSampleById(ctx)
-	response, _ := v1.PrepareResponse(ctx, sample, serviceErr)
+	vars := mux.Vars(req)
+	input := req.Context().Value("Input").(*UserPut)
+	user, serviceErr := h.service.update(ctx, vars["id"], input)
+	response, _ := response.NewV1(ctx, user, serviceErr)
+
+	res.Header().Set("Content-Type", "application/json")
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -113,22 +117,22 @@ func (h *handler) updateSample(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }
 
-func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
-	ctx, span := monitoring.CreateSpan(req.Context(), "deleteSample")
+func (h *handler) delete(res http.ResponseWriter, req *http.Request) {
+	ctx, span := monitoring.CreateSpan(req.Context(), "delete")
 	defer span.End()
 
 	// PrepareResponse won't error as it's just returning the result of
 	// json.Marshal on structures we control and are all safe
-	output, serviceErr := h.service.deleteSampleById(ctx)
-	response, _ := v1.PrepareResponse(ctx, output, serviceErr)
+	vars := mux.Vars(req)
+	output, serviceErr := h.service.delete(ctx, vars["id"])
+	response, _ := response.NewV1(ctx, output, serviceErr)
+
+	res.Header().Set("Content-Type", "application/json")
 
 	// Set attributes and headers correctly based on what we have in serviceErr
 	if serviceErr != nil && serviceErr.StatusCode != 0 {
@@ -138,10 +142,7 @@ func (h *handler) deleteSample(res http.ResponseWriter, req *http.Request) {
 	if serviceErr != nil && serviceErr.Original != nil {
 		span.RecordError(serviceErr.Original)
 		span.SetStatus(codes.Error, serviceErr.Original.Error())
-	} else {
-		span.SetStatus(codes.Ok, "Ok")
 	}
 
-	res.Header().Set("Content-Type", "application/json")
 	res.Write(response)
 }

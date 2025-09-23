@@ -10,26 +10,33 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/robert-w/go-server/internal/database"
 	"github.com/robert-w/go-server/internal/monitoring"
+	"github.com/robert-w/go-server/internal/requestutil"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 type apiServer struct {
-	databasePool  *pgxpool.Pool
-	server        *http.Server
-	traceProvider *trace.TracerProvider
+	databasePool   *pgxpool.Pool
+	server         *http.Server
+	tracerProvider *trace.TracerProvider
 }
 
 func New(ctx context.Context) (*apiServer, error) {
-	traceProvider, err := monitoring.NewTraceProvider(ctx)
+	tracerProvider, err := monitoring.NewTraceProvider(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	databasePool, err := database.NewPool(ctx)
+	databasePool, err := database.NewPool(ctx, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
+
+	// Create some common utils that we will use to work with requests
+	utils := requestutil.New(
+		requestutil.WithSchemaDecoder(),
+		requestutil.WithValidator(),
+	)
 
 	router := mux.NewRouter()
 
@@ -42,15 +49,17 @@ func New(ctx context.Context) (*apiServer, error) {
 	v1Router.Use(otelmux.Middleware("go-server"))
 
 	registerSystemRoutes(systemRouter)
-	registerV1Routes(v1Router)
+	registerV1Routes(v1Router, utils, databasePool)
 
 	return &apiServer{
 		databasePool: databasePool,
 		server: &http.Server{
-			Addr:    ":3000",
-			Handler: router,
+			Addr:              ":3000",
+			Handler:           http.TimeoutHandler(router, 5*time.Second, "Request took too long to process"),
+			ReadHeaderTimeout: 500 * time.Millisecond,
+			ReadTimeout:       500 * time.Millisecond,
 		},
-		traceProvider: traceProvider,
+		tracerProvider: tracerProvider,
 	}, nil
 }
 
@@ -65,9 +74,11 @@ func (api *apiServer) Shutdown() {
 	defer cancel()
 
 	// Only do the shutdowns if we successfully created the apiServer
-	if api == nil { return }
+	if api == nil {
+		return
+	}
 
-	api.traceProvider.Shutdown(ctx)
+	api.tracerProvider.Shutdown(ctx)
 	api.databasePool.Close()
 	api.server.Shutdown(ctx)
 }

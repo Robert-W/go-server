@@ -14,6 +14,6 @@ func TestHealthcheck(t *testing.T) {
 	Healthcheck(res, req)
 
 	if res.Code != 200 {
-		t.Errorf("Healthcheck must return a 200")
+		t.Errorf("Healthcheck must return a 200, got %d", res.Code)
 	}
 }

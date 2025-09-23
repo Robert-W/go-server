@@ -1,4 +1,4 @@
-package v1
+package response
 
 import (
 	"context"
@@ -19,7 +19,7 @@ func TestPrepareResponse(t *testing.T) {
 
 	t.Run("should return a valid success response when no error given", func(t *testing.T) {
 		goodResponse := &response{Foo: "Scooby"}
-		output, err := PrepareResponse(ctx, goodResponse, nil)
+		output, err := NewV1(ctx, goodResponse, nil)
 
 		if err != nil {
 			t.Errorf("Received an marshalling error when we should have a v1Response: %v", err)
@@ -33,12 +33,12 @@ func TestPrepareResponse(t *testing.T) {
 	})
 
 	t.Run("should return a valid error response when given an error", func(t *testing.T) {
-		goodErr := &Error{
+		goodErr := &ErrorJsonV1{
 			Original:   errors.New("OG"),
 			Message:    "Scooby",
 			StatusCode: 500,
 		}
-		output, err := PrepareResponse(ctx, nil, goodErr)
+		output, err := NewV1(ctx, nil, goodErr)
 
 		if err != nil {
 			t.Errorf("Received an marshalling error when we should have a v1Response: %v", err)
@@ -56,7 +56,7 @@ func TestPrepareResponse(t *testing.T) {
 	// message here in case it changes, just that we get back what we expect
 	t.Run("should return a marshalling error when the provided response is not marshallable", func(t *testing.T) {
 		badResponse := &badResponse{Foo: make(chan int)}
-		output, err := PrepareResponse(ctx, badResponse, nil)
+		output, err := NewV1(ctx, badResponse, nil)
 
 		if output != nil {
 			t.Errorf("Bad Response should not be successfully serialized")
@@ -68,3 +68,4 @@ func TestPrepareResponse(t *testing.T) {
 	})
 
 }
+

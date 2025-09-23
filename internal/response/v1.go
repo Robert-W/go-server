@@ -1,4 +1,4 @@
-package v1
+package response
 
 import (
 	"context"
@@ -7,16 +7,16 @@ import (
 	"github.com/robert-w/go-server/internal/monitoring"
 )
 
-type Error struct {
+type ErrorJsonV1 struct {
 	Original   error  `json:"-"`
 	Message    string `json:"message"`
 	StatusCode int    `json:"statusCode"`
 }
 
-type v1Response struct {
-	Status string `json:"status"`
-	Result any    `json:"result,omitempty"`
-	Error  *Error `json:"error,omitempty"`
+type ResponseJsonV1 struct {
+	Status string       `json:"status"`
+	Result any          `json:"result,omitempty"`
+	Error  *ErrorJsonV1 `json:"error,omitempty"`
 }
 
 // Wrapper function to take the response from a service, which is either a
@@ -26,14 +26,14 @@ type v1Response struct {
 //
 // result is any marshallable struct, err is an error interface, errorType is
 // referring to error constants from internal/constants/errors.go
-func PrepareResponse(ctx context.Context, result any, err *Error) ([]byte, error) {
+func NewV1(ctx context.Context, result any, err *ErrorJsonV1) ([]byte, error) {
 	_, span := monitoring.CreateSpan(ctx, "PrepareResponse")
 	defer span.End()
 	// handle the error scenario first
 	if err != nil {
-		return json.Marshal(&v1Response{Status: "error", Error: err})
+		return json.Marshal(&ResponseJsonV1{Status: "error", Error: err})
 	}
 
 	// we have a response, attempt to prepare our output
-	return json.Marshal(&v1Response{Status: "ok", Result: result})
+	return json.Marshal(&ResponseJsonV1{Status: "ok", Result: result})
 }
