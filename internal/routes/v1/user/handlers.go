@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/robert-w/go-server/internal/monitoring"
-	"github.com/robert-w/go-server/internal/response"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/response"
 	"go.opentelemetry.io/otel/codes"
 )
 

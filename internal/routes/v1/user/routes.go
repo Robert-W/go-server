@@ -3,8 +3,8 @@ package user
 import (
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/robert-w/go-server/internal/middleware"
-	"github.com/robert-w/go-server/internal/requestutil"
+	"github.com/noir-cats/go-sample-server/internal/middleware"
+	"github.com/noir-cats/go-sample-server/internal/requestutil"
 )
 
 func RegisterRoutes(subrouter *mux.Router, utils *requestutil.RequestUtils, pool *pgxpool.Pool) {

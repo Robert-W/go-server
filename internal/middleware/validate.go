@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/robert-w/go-server/internal/monitoring"
-	"github.com/robert-w/go-server/internal/requestutil"
-	"github.com/robert-w/go-server/internal/response"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/requestutil"
+	"github.com/noir-cats/go-sample-server/internal/response"
 	"go.opentelemetry.io/otel/codes"
 )
 

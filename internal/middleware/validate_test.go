@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/robert-w/go-server/internal/requestutil"
+	"github.com/noir-cats/go-sample-server/internal/requestutil"
 )
 
 type Thing struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"runtime"
 
-	"github.com/robert-w/go-server/internal/constants"
+	"github.com/noir-cats/go-sample-server/internal/constants"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"

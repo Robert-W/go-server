@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	dotenv "github.com/joho/godotenv"
-	"github.com/robert-w/go-server/internal/logger"
-	"github.com/robert-w/go-server/internal/server"
+	"github.com/noir-cats/go-sample-server/internal/logger"
+	"github.com/noir-cats/go-sample-server/internal/server"
 )
 
 func main() {

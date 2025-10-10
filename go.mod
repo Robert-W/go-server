@@ -1,4 +1,4 @@
-module github.com/robert-w/go-server
+module github.com/noir-cats/go-sample-server
 
 go 1.24.5
 

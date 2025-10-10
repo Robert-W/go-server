@@ -8,9 +8,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/robert-w/go-server/internal/database"
-	"github.com/robert-w/go-server/internal/monitoring"
-	"github.com/robert-w/go-server/internal/requestutil"
+	"github.com/noir-cats/go-sample-server/internal/database"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/requestutil"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.opentelemetry.io/otel/sdk/trace"
 )

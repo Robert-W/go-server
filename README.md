@@ -1,5 +1,5 @@
-# go-server
-Practice project building an API server in Go
+# go-sample-server
+Just a simple example server written in Go to test out random things while learning go
 
 ## Pre-requisites
 - Install [Go](https://go.dev/doc/install)

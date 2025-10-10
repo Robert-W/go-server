@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/robert-w/go-server/internal/monitoring"
-	"github.com/robert-w/go-server/internal/response"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/response"
 	"go.opentelemetry.io/otel/codes"
 )
 

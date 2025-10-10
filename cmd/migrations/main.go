@@ -12,9 +12,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	dotenv "github.com/joho/godotenv"
 	"github.com/pressly/goose/v3"
-	"github.com/robert-w/go-server/internal/database"
-	"github.com/robert-w/go-server/internal/logger"
-	"github.com/robert-w/go-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/database"
+	"github.com/noir-cats/go-sample-server/internal/logger"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 

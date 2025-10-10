@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/robert-w/go-server/internal/response"
+	"github.com/noir-cats/go-sample-server/internal/response"
 )
 
 // Create a mock that returns a successful response

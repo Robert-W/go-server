@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/robert-w/go-server/internal/monitoring"
+	"github.com/noir-cats/go-sample-server/internal/monitoring"
 )
 
 type ErrorJsonV1 struct {
